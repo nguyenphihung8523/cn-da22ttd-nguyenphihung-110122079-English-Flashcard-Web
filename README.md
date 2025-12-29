@@ -98,7 +98,7 @@ Tài khoản Admin:
 4. Nhấp "Đăng ký"
 
 ### Đăng nhập
-1. Nhập username/email và mật khẩu
+1. Nhập username hoặc email và mật khẩu
 2. Nhấp "Đăng nhập"
 
 ### Học flashcard
