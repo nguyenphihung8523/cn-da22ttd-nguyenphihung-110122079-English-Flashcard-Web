@@ -86,7 +86,7 @@ node createTestUser.js
 ```
 
 Tài khoản Admin:
-- Username: `admin123`
+- Username: `admin123@gmail.com`
 - Password: `123456`
 
 ## Sử dụng ứng dụng
@@ -94,11 +94,11 @@ Tài khoản Admin:
 ### Đăng ký tài khoản mới
 1. Truy cập http://localhost:3000
 2. Nhấp "Đăng ký"
-3. Nhập username, email, mật khẩu
+3. Nhập username, tài khoản, mật khẩu
 4. Nhấp "Đăng ký"
 
 ### Đăng nhập
-1. Nhập username hoặc email và mật khẩu
+1. Nhập tài khoản hoặc email và mật khẩu
 2. Nhấp "Đăng nhập"
 
 ### Học flashcard
