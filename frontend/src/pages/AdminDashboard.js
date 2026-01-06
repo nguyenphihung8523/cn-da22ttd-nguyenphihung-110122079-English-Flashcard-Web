@@ -29,6 +29,64 @@ export default function AdminDashboard() {
   const [topicFlashcards, setTopicFlashcards] = useState([]);
   const [flippedCards, setFlippedCards] = useState({});
 
+  // States for Speaking drill-down
+  const [selectedSpeakingLevel, setSelectedSpeakingLevel] = useState(null);
+  const [selectedSpeakingTopic, setSelectedSpeakingTopic] = useState(null);
+  const [speakingTopics, setSpeakingTopics] = useState([]);
+  const [speakingItems, setSpeakingItems] = useState([]);
+
+  // Speaking levels and topics data
+  const speakingLevelsList = ['Cơ bản', 'Giao tiếp', 'Đoạn văn'];
+  const speakingTopicsData = {
+    'Cơ bản': [
+      { name: 'Động vật', count: 8 },
+      { name: 'Trái cây', count: 8 },
+      { name: 'Màu sắc', count: 8 },
+      { name: 'Số đếm', count: 8 }
+    ],
+    'Giao tiếp': [
+      { name: 'Chào hỏi', count: 10 },
+      { name: 'Mua sắm', count: 8 },
+      { name: 'Nhà hàng', count: 8 },
+      { name: 'Du lịch', count: 10 }
+    ],
+    'Đoạn văn': [
+      { name: 'Kinh doanh', count: 6 },
+      { name: 'Công nghệ', count: 6 },
+      { name: 'Đời sống', count: 6 }
+    ]
+  };
+
+  const handleSelectSpeakingLevel = (level) => {
+    setSelectedSpeakingLevel(level);
+    setSelectedSpeakingTopic(null);
+    setSpeakingTopics(speakingTopicsData[level] || []);
+    setSpeakingItems([]);
+  };
+
+  const handleSelectSpeakingTopic = (topic) => {
+    setSelectedSpeakingTopic(topic);
+    // Sample speaking items for the topic
+    setSpeakingItems([
+      { _id: '1', text: 'Hello', meaning: 'Xin chào', pronunciation: 'həˈloʊ' },
+      { _id: '2', text: 'Good morning', meaning: 'Chào buổi sáng', pronunciation: 'ɡʊd ˈmɔːrnɪŋ' },
+      { _id: '3', text: 'How are you?', meaning: 'Bạn khỏe không?', pronunciation: 'haʊ ɑːr juː' },
+      { _id: '4', text: 'Nice to meet you', meaning: 'Rất vui được gặp bạn', pronunciation: 'naɪs tuː miːt juː' }
+    ]);
+  };
+
+  const handleBackToSpeakingLevels = () => {
+    setSelectedSpeakingLevel(null);
+    setSelectedSpeakingTopic(null);
+    setSpeakingTopics([]);
+    setSpeakingItems([]);
+  };
+
+  const handleBackToSpeakingTopics = () => {
+    setSelectedSpeakingTopic(null);
+    setSpeakingItems([]);
+  };
+
   // Toggle flip card
   const toggleFlipCard = (cardId) => {
     setFlippedCards(prev => ({
@@ -828,129 +886,228 @@ export default function AdminDashboard() {
             {/* Speaking Tab */}
             {activeTab === 'speaking' && (
               <div className="space-y-6">
-                {/* Speaking Levels */}
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                  <div className="p-6 border-b flex justify-between items-center">
-                    <h2 className="text-2xl font-bold text-gray-800">🎤 Quản lý Cấp độ Luyện nói</h2>
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
-                      ➕ Thêm cấp độ
+                {/* Breadcrumb Navigation */}
+                <div className="bg-white rounded-lg shadow p-4">
+                  <div className="flex items-center gap-2 text-sm">
+                    <button 
+                      onClick={handleBackToSpeakingLevels}
+                      className={`${!selectedSpeakingLevel ? 'text-purple-600 font-semibold' : 'text-gray-600 hover:text-purple-600'}`}
+                    >
+                      🎤 Cấp độ
                     </button>
+                    {selectedSpeakingLevel && (
+                      <>
+                        <span className="text-gray-400">→</span>
+                        <button 
+                          onClick={handleBackToSpeakingTopics}
+                          className={`${selectedSpeakingLevel && !selectedSpeakingTopic ? 'text-purple-600 font-semibold' : 'text-gray-600 hover:text-purple-600'}`}
+                        >
+                          {selectedSpeakingLevel}
+                        </button>
+                      </>
+                    )}
+                    {selectedSpeakingTopic && (
+                      <>
+                        <span className="text-gray-400">→</span>
+                        <span className="text-purple-600 font-semibold">{selectedSpeakingTopic.name}</span>
+                      </>
+                    )}
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-                    {[
-                      { name: 'Cơ bản', topics: 4, items: 32 },
-                      { name: 'Giao tiếp', topics: 4, items: 32 },
-                      { name: 'Đoạn văn', topics: 3, items: 24 }
-                    ].map((level, idx) => (
-                      <div key={idx} className="border-2 border-purple-300 rounded-lg p-4 hover:shadow-lg transition">
-                        <h3 className="font-bold text-gray-800 mb-3">{level.name}</h3>
-                        <div className="space-y-2 mb-3">
-                          <p className="text-sm text-gray-600">📝 Chủ đề: {level.topics}</p>
-                          <p className="text-sm text-gray-600">🎯 Mục luyện tập: {level.items}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button className="flex-1 px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">Sửa</button>
-                          <button className="flex-1 px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600">Xóa</button>
-                        </div>
+                </div>
+
+                {/* Level View */}
+                {!selectedSpeakingLevel && (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="p-6 border-b flex justify-between items-center">
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-800">🎤 Quản lý Cấp độ Luyện nói</h2>
+                        <p className="text-gray-600 mt-1">Nhấn "Sửa" để xem các chủ đề của cấp độ</p>
                       </div>
-                    ))}
+                      <button className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 font-semibold">
+                        ➕ Thêm cấp độ
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
+                      {speakingLevelsList.map((level, idx) => (
+                        <div key={idx} className="border-2 border-purple-300 rounded-lg p-4 hover:shadow-lg transition">
+                          <h3 className="font-bold text-gray-800 mb-3">{level}</h3>
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => handleSelectSpeakingLevel(level)}
+                              className="flex-1 px-2 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+                            >
+                              ✏️ Sửa
+                            </button>
+                            <button className="flex-1 px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600">🗑️ Xóa</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Speaking Topics */}
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                  <div className="p-6 border-b flex justify-between items-center">
-                    <h2 className="text-2xl font-bold text-gray-800">📚 Quản lý Chủ đề Luyện nói</h2>
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
-                      ➕ Thêm chủ đề
-                    </button>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 border-b">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Chủ đề</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Cấp độ</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Mục luyện tập</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[
-                          { name: 'Động vật', level: 'Cơ bản', items: 8 },
-                          { name: 'Trái cây', level: 'Cơ bản', items: 8 },
-                          { name: 'Hàng ngày', level: 'Giao tiếp', items: 8 },
-                          { name: 'Mua sắm', level: 'Giao tiếp', items: 8 },
-                          { name: 'Kinh doanh', level: 'Đoạn văn', items: 8 }
-                        ].map((topic, idx) => (
-                          <tr key={idx} className="border-b hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm text-gray-800 font-medium">{topic.name}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{topic.level}</td>
-                            <td className="px-6 py-4 text-sm">
-                              <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-semibold">
-                                {topic.items}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-sm space-x-2">
-                              <button className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">✏️ Sửa</button>
-                              <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">🗑️ Xóa</button>
-                            </td>
+                {/* Topic View */}
+                {selectedSpeakingLevel && !selectedSpeakingTopic && (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="p-6 border-b flex justify-between items-center">
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-800">🏷️ Chủ đề - {selectedSpeakingLevel}</h2>
+                        <p className="text-gray-600 mt-1">Nhấn "Sửa" để xem các mục luyện tập</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 font-semibold">
+                          ➕ Thêm chủ đề
+                        </button>
+                        <button 
+                          onClick={handleBackToSpeakingLevels}
+                          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-semibold"
+                        >
+                          ← Quay lại
+                        </button>
+                      </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50 border-b">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Chủ đề</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Số mục luyện tập</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {speakingTopics.map((topic, idx) => (
+                            <tr key={idx} className="border-b hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm text-gray-800 font-medium">{topic.name}</td>
+                              <td className="px-6 py-4 text-sm">
+                                <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-semibold">
+                                  {topic.count}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm space-x-2">
+                                <button 
+                                  onClick={() => handleSelectSpeakingTopic(topic)}
+                                  className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+                                >
+                                  ✏️ Sửa
+                                </button>
+                                <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">🗑️ Xóa</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Speaking Content Items */}
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                  <div className="p-6 border-b">
-                    <h2 className="text-2xl font-bold text-gray-800">🎯 Quản lý Mục Luyện tập</h2>
-                  </div>
-                  <div className="p-6 mb-4 bg-gray-50 flex gap-4">
-                    <input 
-                      type="text" 
-                      placeholder="Tìm kiếm mục luyện tập..." 
-                      className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <select className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                      <option>Tất cả cấp độ</option>
-                      <option>Cơ bản</option>
-                      <option>Giao tiếp</option>
-                      <option>Đoạn văn</option>
-                    </select>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 border-b">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nội dung</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Chủ đề</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Cấp độ</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[
-                          { text: 'Cat', topic: 'Động vật', level: 'Cơ bản' },
-                          { text: 'Dog', topic: 'Động vật', level: 'Cơ bản' },
-                          { text: 'Good morning', topic: 'Hàng ngày', level: 'Giao tiếp' },
-                          { text: 'How are you?', topic: 'Hàng ngày', level: 'Giao tiếp' }
-                        ].map((item, idx) => (
-                          <tr key={idx} className="border-b hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm text-gray-800 font-medium">{item.text}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{item.topic}</td>
-                            <td className="px-6 py-4 text-sm">{item.level}</td>
-                            <td className="px-6 py-4 text-sm space-x-2">
-                              <button className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">✏️ Sửa</button>
-                              <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">🗑️ Xóa</button>
-                            </td>
-                          </tr>
+                {/* Speaking Items View */}
+                {selectedSpeakingTopic && (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="p-6 border-b flex justify-between items-center">
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-800">🎯 Mục luyện tập - {selectedSpeakingTopic.name}</h2>
+                        <p className="text-gray-600 mt-1">Cấp độ: {selectedSpeakingLevel} • Nhấn vào thẻ để lật</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 font-semibold">
+                          ➕ Thêm mục
+                        </button>
+                        <button 
+                          onClick={handleBackToSpeakingTopics}
+                          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-semibold"
+                        >
+                          ← Quay lại
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Speaking Items Grid */}
+                    <div className="p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {speakingItems.map((item) => (
+                          <div key={item._id} className="flex flex-col">
+                            <div 
+                              className="relative cursor-pointer"
+                              style={{ perspective: '1000px', height: '280px' }}
+                              onClick={() => toggleFlipCard(`speaking-${item._id}`)}
+                            >
+                              <div 
+                                className="relative w-full h-full transition-transform duration-700"
+                                style={{ 
+                                  transformStyle: 'preserve-3d',
+                                  transform: flippedCards[`speaking-${item._id}`] ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                                }}
+                              >
+                                {/* Front */}
+                                <div 
+                                  className="absolute w-full h-full bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-purple-300"
+                                  style={{ backfaceVisibility: 'hidden' }}
+                                >
+                                  <div className="relative h-full flex flex-col justify-between p-4">
+                                    <div className="flex justify-between items-start">
+                                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                                        {speakingItems.indexOf(item) + 1}
+                                      </div>
+                                      <span className="text-gray-400 text-xs">Nhấn để lật</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center items-center">
+                                      <span className="text-4xl mb-3">🎤</span>
+                                      <h2 className="text-2xl font-bold text-purple-600 mb-2 text-center">{item.text}</h2>
+                                      {item.pronunciation && (
+                                        <p className="text-sm text-gray-500">/{item.pronunciation}/</p>
+                                      )}
+                                    </div>
+                                    <div className="text-center">
+                                      <p className="text-xs text-gray-400">Click để xem nghĩa</p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Back */}
+                                <div 
+                                  className="absolute w-full h-full bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-green-300"
+                                  style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                                >
+                                  <div className="relative h-full flex flex-col justify-between p-4">
+                                    <div className="flex justify-between items-start">
+                                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-sm">
+                                        {speakingItems.indexOf(item) + 1}
+                                      </div>
+                                      <span className="text-gray-400 text-xs">Nhấn để lật</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center items-center px-2">
+                                      <p className="text-xl font-bold text-gray-800 text-center">{item.meaning}</p>
+                                    </div>
+                                    <div className="text-center">
+                                      <p className="text-xs text-gray-400">Click để xem từ vựng</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Action buttons */}
+                            <div className="flex gap-2 mt-3 justify-center">
+                              <button className="px-3 py-1.5 bg-purple-500 text-white rounded-lg text-sm hover:bg-purple-600 font-medium">
+                                ✏️ Sửa
+                              </button>
+                              <button className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 font-medium">
+                                🗑️ Xóa
+                              </button>
+                            </div>
+                          </div>
                         ))}
-                      </tbody>
-                    </table>
+                      </div>
+                    </div>
+                    
+                    {speakingItems.length > 0 && (
+                      <div className="p-4 bg-gray-50 text-center text-sm text-gray-600">
+                        Tổng: {speakingItems.length} mục luyện tập
+                      </div>
+                    )}
                   </div>
-                </div>
+                )}
               </div>
             )}
 
