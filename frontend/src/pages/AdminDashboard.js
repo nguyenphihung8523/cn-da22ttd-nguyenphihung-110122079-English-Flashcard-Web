@@ -397,78 +397,76 @@ export default function AdminDashboard() {
                 <p className="text-gray-600">Đang tải dữ liệu...</p>
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="p-6 border-b flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-gray-800">Quản lý người dùng</h2>
-                  <button
-                    onClick={() => setShowUserModal(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
-                  >
-                    ➕ Thêm người dùng
-                  </button>
-                </div>
-                {loading ? (
-                  <div className="p-6 text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                    <p className="text-gray-600">Đang tải dữ liệu người dùng...</p>
-                  </div>
-                ) : users.length === 0 ? (
-                  <div className="p-6 text-center">
-                    <p className="text-gray-600">Không có người dùng nào</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 border-b">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tên</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tài khoản</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Quyền</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Trạng thái</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {users.map((user) => (
-                          <tr key={user._id} className="border-b hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm text-gray-800">{user.username}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
-                            <td className="px-6 py-4 text-sm">
-                              <select
-                                value={user.role}
-                                onChange={(e) => changeUserRole(user._id, e.target.value)}
-                                className="px-2 py-1 border rounded text-sm"
-                              >
-                                <option value="user">User</option>
-                                <option value="admin">Admin</option>
-                              </select>
-                            </td>
-                            <td className="px-6 py-4 text-sm">
-                              <button
-                                onClick={() => toggleUserStatus(user._id)}
-                                className={`px-3 py-1 rounded text-white font-semibold text-sm ${
-                                  user.isActive ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
-                                }`}
-                              >
-                                {user.isActive ? '✓ Hoạt động' : '✗ Khóa'}
-                              </button>
-                            </td>
-                            <td className="px-6 py-4 text-sm space-x-2">
-                              <button
-                                onClick={() => deleteUser(user._id)}
-                                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-semibold text-sm"
-                              >
-                                🗑️ Xóa
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+              <>
+                {/* Users Tab */}
+                {activeTab === 'users' && (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="p-6 border-b flex justify-between items-center">
+                      <h2 className="text-2xl font-bold text-gray-800">Quản lý người dùng</h2>
+                      <button
+                        onClick={() => setShowUserModal(true)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
+                      >
+                        ➕ Thêm người dùng
+                      </button>
+                    </div>
+                    {users.length === 0 ? (
+                      <div className="p-6 text-center">
+                        <p className="text-gray-600">Không có người dùng nào</p>
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-gray-50 border-b">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tên</th>
+                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tài khoản</th>
+                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Quyền</th>
+                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Trạng thái</th>
+                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {users.map((user) => (
+                              <tr key={user._id} className="border-b hover:bg-gray-50">
+                                <td className="px-6 py-4 text-sm text-gray-800">{user.username}</td>
+                                <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
+                                <td className="px-6 py-4 text-sm">
+                                  <select
+                                    value={user.role}
+                                    onChange={(e) => changeUserRole(user._id, e.target.value)}
+                                    className="px-2 py-1 border rounded text-sm"
+                                  >
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                  </select>
+                                </td>
+                                <td className="px-6 py-4 text-sm">
+                                  <button
+                                    onClick={() => toggleUserStatus(user._id)}
+                                    className={`px-3 py-1 rounded text-white font-semibold text-sm ${
+                                      user.isActive ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
+                                    }`}
+                                  >
+                                    {user.isActive ? '✓ Hoạt động' : '✗ Khóa'}
+                                  </button>
+                                </td>
+                                <td className="px-6 py-4 text-sm space-x-2">
+                                  <button
+                                    onClick={() => deleteUser(user._id)}
+                                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-semibold text-sm"
+                                  >
+                                    🗑️ Xóa
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            )}
 
             {/* Flashcards Tab */}
             {activeTab === 'flashcards' && (
@@ -773,6 +771,8 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
+            )}
+              </>
             )}
           </>
         )}
