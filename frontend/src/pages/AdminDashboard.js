@@ -534,61 +534,6 @@ export default function AdminDashboard() {
                     </table>
                   </div>
                 </div>
-
-                {/* Flashcard Management */}
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                  <div className="p-6 border-b">
-                    <h2 className="text-2xl font-bold text-gray-800">📇 Quản lý Flashcards</h2>
-                  </div>
-                  <div className="p-6 mb-4 bg-gray-50 flex gap-4">
-                    <input 
-                      type="text" 
-                      placeholder="Tìm kiếm flashcard..." 
-                      className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <select className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                      <option>Tất cả cấp độ</option>
-                      <option>Cơ bản</option>
-                      <option>Trung cấp</option>
-                      <option>Nâng cao</option>
-                    </select>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 border-b">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Từ vựng</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nghĩa</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Cấp độ</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Chủ đề</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {flashcards.slice(0, 15).map((card) => (
-                          <tr key={card._id} className="border-b hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm text-gray-800 font-medium">{card.word}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{card.meaning}</td>
-                            <td className="px-6 py-4 text-sm">{card.level}</td>
-                            <td className="px-6 py-4 text-sm">{card.topic}</td>
-                            <td className="px-6 py-4 text-sm space-x-2">
-                              <button className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">✏️ Sửa</button>
-                              <button 
-                                onClick={() => deleteFlashcard(card._id)}
-                                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
-                              >
-                                🗑️ Xóa
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="p-4 bg-gray-50 text-center text-sm text-gray-600">
-                    Hiển thị 15 / {flashcards.length} flashcards
-                  </div>
-                </div>
               </div>
             )}
 
