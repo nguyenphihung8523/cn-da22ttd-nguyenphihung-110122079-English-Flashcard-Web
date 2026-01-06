@@ -363,7 +363,7 @@ export default function AdminDashboard() {
                   : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
               }`}
             >
-              📇 Flashcards
+              📚 Bài học
             </button>
             <button
               onClick={() => handleTabChange('speaking')}
