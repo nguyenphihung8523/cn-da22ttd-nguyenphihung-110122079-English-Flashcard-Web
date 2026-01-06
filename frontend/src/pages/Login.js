@@ -11,10 +11,16 @@ export default function Login(){
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-      const { token } = res.data;
+      const { token, user } = res.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
       alert('Đăng nhập thành công');
-      navigate('/dashboard');
+      // Chuyển hướng dựa trên role
+      if (user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       alert(err.response?.data?.message || 'Lỗi đăng nhập');
     }

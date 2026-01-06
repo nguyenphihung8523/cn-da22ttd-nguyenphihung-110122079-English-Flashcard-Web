@@ -27,6 +27,8 @@ import { NavigationProvider } from './context/NavigationContext';
 function AppContent() {
   const location = useLocation();
   const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const isAdmin = user?.role === 'admin';
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
   const isAdminPage = location.pathname === '/admin';
 
@@ -36,11 +38,11 @@ function AppContent() {
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={
-            token ? <Navigate to="/dashboard" replace /> : <Home />
+            token ? (isAdmin ? <Navigate to="/admin" replace /> : <Navigate to="/dashboard" replace />) : <Home />
           } />
           <Route path="/dashboard" element={
             <ProtectedRoute>
-              <Dashboard />
+              {isAdmin ? <Navigate to="/admin" replace /> : <Dashboard />}
             </ProtectedRoute>
           } />
           <Route path="/flashcards" element={
