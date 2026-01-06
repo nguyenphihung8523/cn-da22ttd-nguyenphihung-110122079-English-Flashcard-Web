@@ -3,13 +3,21 @@ const Flashcard = require('../models/Flashcard');
 const getAll = async (req, res) => {
   try {
     const { category, level, topic } = req.query;
+    console.log('📥 Query params:', { category, level, topic });
+    
     const filter = {};
     if (category) filter.category = category;
     if (level) filter.level = level;
     if (topic) filter.topic = topic;
+    
+    console.log('🔍 Filter:', filter);
+    
     const cards = await Flashcard.find(filter).limit(200);
+    console.log(`📊 Found ${cards.length} cards`);
+    
     res.json(cards);
   } catch (err) {
+    console.error('❌ Error:', err);
     res.status(500).json({message: 'Lỗi server'});
   }
 };
