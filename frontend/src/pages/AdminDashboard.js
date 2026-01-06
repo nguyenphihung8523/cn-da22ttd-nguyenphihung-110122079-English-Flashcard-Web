@@ -1,8 +1,10 @@
 import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import { NavigationContext } from '../context/NavigationContext';
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const { setPageState } = useContext(NavigationContext);
   const [activeTab, setActiveTab] = useState('users');
   const [stats, setStats] = useState(null);
@@ -19,6 +21,12 @@ export default function AdminDashboard() {
   const [showSpeakingModal, setShowSpeakingModal] = useState(false);
   const [filterLevel, setFilterLevel] = useState('all');
   const [filterTopic, setFilterTopic] = useState('all');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   useEffect(() => {
     setPageState('admin', '/admin');
@@ -184,8 +192,35 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-6 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-100">
+      {/* Admin Header */}
+      <header className="bg-gradient-to-r from-blue-800 to-blue-900 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">⚙️</span>
+            <div>
+              <h1 className="text-xl font-bold">Admin Panel</h1>
+              <p className="text-blue-200 text-sm">English Flashcard Web</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            {adminInfo && (
+              <span className="text-blue-200">
+                👤 {adminInfo.username}
+              </span>
+            )}
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors"
+            >
+              🚪 Đăng xuất
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="py-6 px-4">
+        <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">⚙️ Quản lý Hệ thống</h1>
@@ -741,6 +776,7 @@ export default function AdminDashboard() {
             )}
           </>
         )}
+        </div>
       </div>
     </div>
   );

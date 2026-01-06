@@ -28,10 +28,11 @@ function AppContent() {
   const location = useLocation();
   const token = localStorage.getItem('token');
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const isAdminPage = location.pathname === '/admin';
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {!isAuthPage && <Header />}
+      {!isAuthPage && !isAdminPage && <Header />}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={
@@ -125,7 +126,7 @@ function AppContent() {
           } />
         </Routes>
       </main>
-      {!isAuthPage && <Footer />}
+      {!isAuthPage && !isAdminPage && <Footer />}
     </div>
   );
 }
