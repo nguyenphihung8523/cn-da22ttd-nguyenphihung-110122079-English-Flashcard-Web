@@ -21,6 +21,75 @@ export default function AdminDashboard() {
   const [showSpeakingModal, setShowSpeakingModal] = useState(false);
   const [filterLevel, setFilterLevel] = useState('all');
   const [filterTopic, setFilterTopic] = useState('all');
+  
+  // States for drill-down: Level -> Topic -> Flashcards
+  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [levelTopics, setLevelTopics] = useState([]);
+  const [topicFlashcards, setTopicFlashcards] = useState([]);
+
+  // Sample data for levels with topics
+  const levelsData = {
+    'Cơ bản': [
+      { name: 'Màu sắc', count: 8 },
+      { name: 'Số đếm', count: 10 },
+      { name: 'Gia đình', count: 8 },
+      { name: 'Động vật', count: 12 }
+    ],
+    'Trung cấp': [
+      { name: 'Công việc', count: 12 },
+      { name: 'Thời tiết', count: 10 },
+      { name: 'Du lịch', count: 15 },
+      { name: 'Ẩm thực', count: 10 }
+    ],
+    'Nâng cao': [
+      { name: 'Kinh doanh', count: 20 },
+      { name: 'Công nghệ', count: 18 },
+      { name: 'Y tế', count: 15 }
+    ],
+    'Giao tiếp': [
+      { name: 'Chào hỏi', count: 10 },
+      { name: 'Mua sắm', count: 12 },
+      { name: 'Nhà hàng', count: 10 }
+    ],
+    'Chuyên ngành': [
+      { name: 'CNTT', count: 25 },
+      { name: 'Kế toán', count: 20 },
+      { name: 'Marketing', count: 18 }
+    ]
+  };
+
+  const handleSelectLevel = (level) => {
+    setSelectedLevel(level);
+    setSelectedTopic(null);
+    setLevelTopics(levelsData[level] || []);
+  };
+
+  const handleSelectTopic = async (topic) => {
+    setSelectedTopic(topic);
+    // Load flashcards for this topic from API
+    try {
+      const response = await API.get(`/flashcards?level=${selectedLevel}&topic=${topic.name}`);
+      if (response.data) {
+        setTopicFlashcards(response.data);
+      }
+    } catch (error) {
+      console.error('Lỗi tải flashcards:', error);
+      setTopicFlashcards([]);
+    }
+  };
+
+  const handleBackToLevels = () => {
+    setSelectedLevel(null);
+    setSelectedTopic(null);
+    setLevelTopics([]);
+    setTopicFlashcards([]);
+  };
+
+  const handleBackToTopics = () => {
+    setSelectedTopic(null);
+    setTopicFlashcards([]);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -471,69 +540,170 @@ export default function AdminDashboard() {
             {/* Flashcards Tab */}
             {activeTab === 'flashcards' && (
               <div className="space-y-6">
-                {/* Level Management */}
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                  <div className="p-6 border-b">
-                    <h2 className="text-2xl font-bold text-gray-800">📚 Quản lý Cấp độ</h2>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-6">
-                    {['Cơ bản', 'Trung cấp', 'Nâng cao', 'Giao tiếp', 'Chuyên ngành'].map((level, idx) => (
-                      <div key={idx} className="border-2 border-blue-300 rounded-lg p-4 hover:shadow-lg transition">
-                        <h3 className="font-bold text-gray-800 mb-3">{level}</h3>
-                        <div className="space-y-2 mb-3">
-                          <p className="text-sm text-gray-600">📇 Flashcards: 50</p>
-                          <p className="text-sm text-gray-600">📝 Chủ đề: 4</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button className="flex-1 px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">Sửa</button>
-                          <button className="flex-1 px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600">Xóa</button>
-                        </div>
-                      </div>
-                    ))}
+                {/* Breadcrumb Navigation */}
+                <div className="bg-white rounded-lg shadow p-4">
+                  <div className="flex items-center gap-2 text-sm">
+                    <button 
+                      onClick={handleBackToLevels}
+                      className={`${!selectedLevel ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}
+                    >
+                      📚 Cấp độ
+                    </button>
+                    {selectedLevel && (
+                      <>
+                        <span className="text-gray-400">→</span>
+                        <button 
+                          onClick={handleBackToTopics}
+                          className={`${selectedLevel && !selectedTopic ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}
+                        >
+                          {selectedLevel}
+                        </button>
+                      </>
+                    )}
+                    {selectedTopic && (
+                      <>
+                        <span className="text-gray-400">→</span>
+                        <span className="text-blue-600 font-semibold">{selectedTopic.name}</span>
+                      </>
+                    )}
                   </div>
                 </div>
 
-                {/* Topic Management */}
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                  <div className="p-6 border-b">
-                    <h2 className="text-2xl font-bold text-gray-800">🏷️ Quản lý Chủ đề</h2>
+                {/* Level View - Show all levels */}
+                {!selectedLevel && (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="p-6 border-b">
+                      <h2 className="text-2xl font-bold text-gray-800">📚 Quản lý Cấp độ</h2>
+                      <p className="text-gray-600 mt-1">Nhấn "Sửa" để xem các chủ đề của cấp độ</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-6">
+                      {Object.keys(levelsData).map((level, idx) => (
+                        <div key={idx} className="border-2 border-blue-300 rounded-lg p-4 hover:shadow-lg transition">
+                          <h3 className="font-bold text-gray-800 mb-3">{level}</h3>
+                          <div className="space-y-2 mb-3">
+                            <p className="text-sm text-gray-600">📝 Chủ đề: {levelsData[level].length}</p>
+                            <p className="text-sm text-gray-600">📇 Flashcards: {levelsData[level].reduce((sum, t) => sum + t.count, 0)}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => handleSelectLevel(level)}
+                              className="flex-1 px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                            >
+                              ✏️ Sửa
+                            </button>
+                            <button className="flex-1 px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600">🗑️ Xóa</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 border-b">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Chủ đề</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Cấp độ</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Flashcards</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[
-                          { name: 'Màu sắc', level: 'Cơ bản', count: 8 },
-                          { name: 'Số đếm', level: 'Cơ bản', count: 10 },
-                          { name: 'Gia đình', level: 'Cơ bản', count: 8 },
-                          { name: 'Công việc', level: 'Trung cấp', count: 12 },
-                          { name: 'Thời tiết', level: 'Trung cấp', count: 10 }
-                        ].map((topic, idx) => (
-                          <tr key={idx} className="border-b hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm text-gray-800 font-medium">{topic.name}</td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{topic.level}</td>
-                            <td className="px-6 py-4 text-sm">
-                              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
-                                {topic.count}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-sm space-x-2">
-                              <button className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">✏️ Sửa</button>
-                              <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">🗑️ Xóa</button>
-                            </td>
+                )}
+
+                {/* Topic View - Show topics of selected level */}
+                {selectedLevel && !selectedTopic && (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="p-6 border-b flex justify-between items-center">
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-800">🏷️ Chủ đề - {selectedLevel}</h2>
+                        <p className="text-gray-600 mt-1">Nhấn "Sửa" để xem các flashcard của chủ đề</p>
+                      </div>
+                      <button 
+                        onClick={handleBackToLevels}
+                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-semibold"
+                      >
+                        ← Quay lại
+                      </button>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50 border-b">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Chủ đề</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Số Flashcards</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {levelTopics.map((topic, idx) => (
+                            <tr key={idx} className="border-b hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm text-gray-800 font-medium">{topic.name}</td>
+                              <td className="px-6 py-4 text-sm">
+                                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
+                                  {topic.count}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm space-x-2">
+                                <button 
+                                  onClick={() => handleSelectTopic(topic)}
+                                  className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                                >
+                                  ✏️ Sửa
+                                </button>
+                                <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">🗑️ Xóa</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Flashcard View - Show flashcards of selected topic */}
+                {selectedTopic && (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="p-6 border-b flex justify-between items-center">
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-800">📇 Flashcards - {selectedTopic.name}</h2>
+                        <p className="text-gray-600 mt-1">Cấp độ: {selectedLevel}</p>
+                      </div>
+                      <button 
+                        onClick={handleBackToTopics}
+                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-semibold"
+                      >
+                        ← Quay lại
+                      </button>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50 border-b">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Từ vựng</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nghĩa</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Phát âm</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {topicFlashcards.length > 0 ? (
+                            topicFlashcards.map((card) => (
+                              <tr key={card._id} className="border-b hover:bg-gray-50">
+                                <td className="px-6 py-4 text-sm text-gray-800 font-medium">{card.word}</td>
+                                <td className="px-6 py-4 text-sm text-gray-600">{card.meaning}</td>
+                                <td className="px-6 py-4 text-sm text-gray-500">{card.pronunciation || '-'}</td>
+                                <td className="px-6 py-4 text-sm space-x-2">
+                                  <button className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">✏️ Sửa</button>
+                                  <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">🗑️ Xóa</button>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
+                                Chưa có flashcard nào trong chủ đề này
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                    {topicFlashcards.length > 0 && (
+                      <div className="p-4 bg-gray-50 text-center text-sm text-gray-600">
+                        Tổng: {topicFlashcards.length} flashcards
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
