@@ -580,9 +580,14 @@ export default function AdminDashboard() {
                 {/* Level View - Show all levels */}
                 {!selectedLevel && (
                   <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <div className="p-6 border-b">
-                      <h2 className="text-2xl font-bold text-gray-800">📚 Quản lý Cấp độ</h2>
-                      <p className="text-gray-600 mt-1">Nhấn "Sửa" để xem các chủ đề của cấp độ</p>
+                    <div className="p-6 border-b flex justify-between items-center">
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-800">📚 Quản lý Cấp độ</h2>
+                        <p className="text-gray-600 mt-1">Nhấn "Sửa" để xem các chủ đề của cấp độ</p>
+                      </div>
+                      <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
+                        ➕ Thêm cấp độ
+                      </button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-6">
                       {levelsList.map((level, idx) => (
