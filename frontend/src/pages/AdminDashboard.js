@@ -678,53 +678,117 @@ export default function AdminDashboard() {
                     
                     {/* Flashcards Grid */}
                     <div className="p-6">
-                      {topicFlashcards.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                      {loading ? (
+                        <div className="text-center py-12">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                          <p className="text-gray-600">Đang tải flashcards...</p>
+                        </div>
+                      ) : topicFlashcards.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                           {topicFlashcards.map((card) => (
-                            <div 
-                              key={card._id} 
-                              className="perspective-1000"
-                              style={{ perspective: '1000px' }}
-                            >
+                            <div key={card._id} className="flex flex-col">
+                              {/* Flashcard với hiệu ứng lật */}
                               <div 
+                                className="relative cursor-pointer"
+                                style={{ perspective: '1000px', height: '280px' }}
                                 onClick={() => toggleFlipCard(card._id)}
-                                className={`relative w-full h-40 cursor-pointer transition-transform duration-500`}
-                                style={{ 
-                                  transformStyle: 'preserve-3d',
-                                  transform: flippedCards[card._id] ? 'rotateY(180deg)' : 'rotateY(0deg)'
-                                }}
                               >
-                                {/* Front - Word */}
                                 <div 
-                                  className="absolute w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg flex flex-col items-center justify-center p-4 text-white"
-                                  style={{ backfaceVisibility: 'hidden' }}
-                                >
-                                  <span className="text-3xl mb-2">{card.image || '📝'}</span>
-                                  <h3 className="text-lg font-bold text-center">{card.word}</h3>
-                                  {card.pronunciation && (
-                                    <p className="text-blue-100 text-sm mt-1">/{card.pronunciation}/</p>
-                                  )}
-                                </div>
-                                
-                                {/* Back - Meaning */}
-                                <div 
-                                  className="absolute w-full h-full bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg flex flex-col items-center justify-center p-4 text-white"
+                                  className="relative w-full h-full transition-transform duration-700"
                                   style={{ 
-                                    backfaceVisibility: 'hidden',
-                                    transform: 'rotateY(180deg)'
+                                    transformStyle: 'preserve-3d',
+                                    transform: flippedCards[card._id] ? 'rotateY(180deg)' : 'rotateY(0deg)'
                                   }}
                                 >
-                                  <h3 className="text-lg font-bold text-center">{card.meaning}</h3>
-                                  {card.example && (
-                                    <p className="text-green-100 text-xs mt-2 text-center italic">"{card.example}"</p>
-                                  )}
+                                  {/* Mặt trước - Front */}
+                                  <div 
+                                    className="absolute w-full h-full bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-blue-300"
+                                    style={{ backfaceVisibility: 'hidden' }}
+                                  >
+                                    <div className="relative h-full flex flex-col justify-between p-4">
+                                      {/* Header */}
+                                      <div className="flex justify-between items-start">
+                                        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">
+                                          {topicFlashcards.indexOf(card) + 1}
+                                        </div>
+                                        <span className="text-gray-400 text-xs">Nhấn để lật</span>
+                                      </div>
+
+                                      {/* Content chính */}
+                                      <div className="flex-1 flex flex-col justify-center items-center">
+                                        {/* Hình minh họa */}
+                                        {card.image && (
+                                          <div className="text-5xl mb-3">
+                                            {card.image}
+                                          </div>
+                                        )}
+
+                                        {/* Từ vựng */}
+                                        <h2 className="text-2xl font-bold text-blue-600 mb-2 text-center">{card.word}</h2>
+                                        
+                                        {/* Phiên âm */}
+                                        {card.pronunciation && (
+                                          <p className="text-sm text-gray-500">/{card.pronunciation}/</p>
+                                        )}
+                                      </div>
+                                      
+                                      {/* Footer */}
+                                      <div className="text-center">
+                                        <p className="text-xs text-gray-400">Click để xem nghĩa</p>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Mặt sau - Back */}
+                                  <div 
+                                    className="absolute w-full h-full bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-green-300"
+                                    style={{ 
+                                      backfaceVisibility: 'hidden',
+                                      transform: 'rotateY(180deg)'
+                                    }}
+                                  >
+                                    <div className="relative h-full flex flex-col justify-between p-4">
+                                      {/* Header */}
+                                      <div className="flex justify-between items-start">
+                                        <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-sm">
+                                          {topicFlashcards.indexOf(card) + 1}
+                                        </div>
+                                        <span className="text-gray-400 text-xs">Nhấn để lật</span>
+                                      </div>
+
+                                      {/* Content chính */}
+                                      <div className="flex-1 flex flex-col justify-center items-center px-2">
+                                        {/* Nghĩa */}
+                                        <p className="text-xl font-bold text-gray-800 mb-3 text-center">{card.meaning}</p>
+                                        
+                                        {/* Ví dụ */}
+                                        {card.example && (
+                                          <div className="bg-gray-50 rounded-lg p-3 w-full">
+                                            <p className="text-sm text-gray-700 italic text-center">"{card.example}"</p>
+                                            {card.exampleTranslation && (
+                                              <p className="text-xs text-gray-500 text-center mt-1">"{card.exampleTranslation}"</p>
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
+                                      
+                                      {/* Footer */}
+                                      <div className="text-center">
+                                        <p className="text-xs text-gray-400">Click để xem từ vựng</p>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                               
                               {/* Action buttons */}
-                              <div className="flex gap-1 mt-2 justify-center">
-                                <button className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">✏️</button>
-                                <button className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">🗑️</button>
+                              <div className="flex gap-2 mt-3 justify-center">
+                                <button className="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 font-medium">
+                                  ✏️ Sửa
+                                </button>
+                                <button className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 font-medium">
+                                  🗑️ Xóa
+                                </button>
                               </div>
                             </div>
                           ))}
