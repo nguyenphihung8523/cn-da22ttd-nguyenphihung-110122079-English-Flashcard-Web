@@ -27,6 +27,15 @@ export default function AdminDashboard() {
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [levelTopics, setLevelTopics] = useState([]);
   const [topicFlashcards, setTopicFlashcards] = useState([]);
+  const [flippedCards, setFlippedCards] = useState({});
+
+  // Toggle flip card
+  const toggleFlipCard = (cardId) => {
+    setFlippedCards(prev => ({
+      ...prev,
+      [cardId]: !prev[cardId]
+    }));
+  };
 
   // Levels list
   const levelsList = ['Cơ bản', 'Trung cấp', 'Nâng cao', 'Giao tiếp', 'Chuyên ngành'];
@@ -657,7 +666,7 @@ export default function AdminDashboard() {
                     <div className="p-6 border-b flex justify-between items-center">
                       <div>
                         <h2 className="text-2xl font-bold text-gray-800">📇 Flashcards - {selectedTopic.name}</h2>
-                        <p className="text-gray-600 mt-1">Cấp độ: {selectedLevel}</p>
+                        <p className="text-gray-600 mt-1">Cấp độ: {selectedLevel} • Nhấn vào thẻ để lật</p>
                       </div>
                       <button 
                         onClick={handleBackToTopics}
@@ -666,39 +675,67 @@ export default function AdminDashboard() {
                         ← Quay lại
                       </button>
                     </div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead className="bg-gray-50 border-b">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Từ vựng</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nghĩa</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Phát âm</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {topicFlashcards.length > 0 ? (
-                            topicFlashcards.map((card) => (
-                              <tr key={card._id} className="border-b hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm text-gray-800 font-medium">{card.word}</td>
-                                <td className="px-6 py-4 text-sm text-gray-600">{card.meaning}</td>
-                                <td className="px-6 py-4 text-sm text-gray-500">{card.pronunciation || '-'}</td>
-                                <td className="px-6 py-4 text-sm space-x-2">
-                                  <button className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">✏️ Sửa</button>
-                                  <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">🗑️ Xóa</button>
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
-                                Chưa có flashcard nào trong chủ đề này
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
+                    
+                    {/* Flashcards Grid */}
+                    <div className="p-6">
+                      {topicFlashcards.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                          {topicFlashcards.map((card) => (
+                            <div 
+                              key={card._id} 
+                              className="perspective-1000"
+                              style={{ perspective: '1000px' }}
+                            >
+                              <div 
+                                onClick={() => toggleFlipCard(card._id)}
+                                className={`relative w-full h-40 cursor-pointer transition-transform duration-500`}
+                                style={{ 
+                                  transformStyle: 'preserve-3d',
+                                  transform: flippedCards[card._id] ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                                }}
+                              >
+                                {/* Front - Word */}
+                                <div 
+                                  className="absolute w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg flex flex-col items-center justify-center p-4 text-white"
+                                  style={{ backfaceVisibility: 'hidden' }}
+                                >
+                                  <span className="text-3xl mb-2">{card.image || '📝'}</span>
+                                  <h3 className="text-lg font-bold text-center">{card.word}</h3>
+                                  {card.pronunciation && (
+                                    <p className="text-blue-100 text-sm mt-1">/{card.pronunciation}/</p>
+                                  )}
+                                </div>
+                                
+                                {/* Back - Meaning */}
+                                <div 
+                                  className="absolute w-full h-full bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg flex flex-col items-center justify-center p-4 text-white"
+                                  style={{ 
+                                    backfaceVisibility: 'hidden',
+                                    transform: 'rotateY(180deg)'
+                                  }}
+                                >
+                                  <h3 className="text-lg font-bold text-center">{card.meaning}</h3>
+                                  {card.example && (
+                                    <p className="text-green-100 text-xs mt-2 text-center italic">"{card.example}"</p>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Action buttons */}
+                              <div className="flex gap-1 mt-2 justify-center">
+                                <button className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">✏️</button>
+                                <button className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">🗑️</button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 text-gray-500">
+                          Chưa có flashcard nào trong chủ đề này
+                        </div>
+                      )}
                     </div>
+                    
                     {topicFlashcards.length > 0 && (
                       <div className="p-4 bg-gray-50 text-center text-sm text-gray-600">
                         Tổng: {topicFlashcards.length} flashcards
