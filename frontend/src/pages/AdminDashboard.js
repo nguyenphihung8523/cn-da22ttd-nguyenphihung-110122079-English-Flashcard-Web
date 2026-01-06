@@ -28,54 +28,53 @@ export default function AdminDashboard() {
   const [levelTopics, setLevelTopics] = useState([]);
   const [topicFlashcards, setTopicFlashcards] = useState([]);
 
-  // Sample data for levels with topics
-  const levelsData = {
-    'Cơ bản': [
-      { name: 'Màu sắc', count: 8 },
-      { name: 'Số đếm', count: 10 },
-      { name: 'Gia đình', count: 8 },
-      { name: 'Động vật', count: 12 }
-    ],
-    'Trung cấp': [
-      { name: 'Công việc', count: 12 },
-      { name: 'Thời tiết', count: 10 },
-      { name: 'Du lịch', count: 15 },
-      { name: 'Ẩm thực', count: 10 }
-    ],
-    'Nâng cao': [
-      { name: 'Kinh doanh', count: 20 },
-      { name: 'Công nghệ', count: 18 },
-      { name: 'Y tế', count: 15 }
-    ],
-    'Giao tiếp': [
-      { name: 'Chào hỏi', count: 10 },
-      { name: 'Mua sắm', count: 12 },
-      { name: 'Nhà hàng', count: 10 }
-    ],
-    'Chuyên ngành': [
-      { name: 'CNTT', count: 25 },
-      { name: 'Kế toán', count: 20 },
-      { name: 'Marketing', count: 18 }
-    ]
-  };
+  // Levels list
+  const levelsList = ['Cơ bản', 'Trung cấp', 'Nâng cao', 'Giao tiếp', 'Chuyên ngành'];
 
-  const handleSelectLevel = (level) => {
+  const handleSelectLevel = async (level) => {
     setSelectedLevel(level);
     setSelectedTopic(null);
-    setLevelTopics(levelsData[level] || []);
+    setTopicFlashcards([]);
+    
+    // Load topics for this level from API
+    try {
+      setLoading(true);
+      const response = await API.get('/flashcards', { params: { level } });
+      if (response.data) {
+        // Group by topic and count
+        const topicCounts = {};
+        response.data.forEach(card => {
+          if (card.topic) {
+            topicCounts[card.topic] = (topicCounts[card.topic] || 0) + 1;
+          }
+        });
+        const topics = Object.entries(topicCounts).map(([name, count]) => ({ name, count }));
+        setLevelTopics(topics);
+      }
+    } catch (error) {
+      console.error('Lỗi tải topics:', error);
+      setLevelTopics([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSelectTopic = async (topic) => {
     setSelectedTopic(topic);
     // Load flashcards for this topic from API
     try {
-      const response = await API.get(`/flashcards?level=${selectedLevel}&topic=${topic.name}`);
+      setLoading(true);
+      const response = await API.get('/flashcards', {
+        params: { level: selectedLevel, topic: topic.name }
+      });
       if (response.data) {
         setTopicFlashcards(response.data);
       }
     } catch (error) {
       console.error('Lỗi tải flashcards:', error);
       setTopicFlashcards([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -577,13 +576,9 @@ export default function AdminDashboard() {
                       <p className="text-gray-600 mt-1">Nhấn "Sửa" để xem các chủ đề của cấp độ</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-6">
-                      {Object.keys(levelsData).map((level, idx) => (
+                      {levelsList.map((level, idx) => (
                         <div key={idx} className="border-2 border-blue-300 rounded-lg p-4 hover:shadow-lg transition">
                           <h3 className="font-bold text-gray-800 mb-3">{level}</h3>
-                          <div className="space-y-2 mb-3">
-                            <p className="text-sm text-gray-600">📝 Chủ đề: {levelsData[level].length}</p>
-                            <p className="text-sm text-gray-600">📇 Flashcards: {levelsData[level].reduce((sum, t) => sum + t.count, 0)}</p>
-                          </div>
                           <div className="flex gap-2">
                             <button 
                               onClick={() => handleSelectLevel(level)}
@@ -614,6 +609,12 @@ export default function AdminDashboard() {
                         ← Quay lại
                       </button>
                     </div>
+                    {loading ? (
+                      <div className="p-6 text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                        <p className="text-gray-600">Đang tải chủ đề...</p>
+                      </div>
+                    ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead className="bg-gray-50 border-b">
@@ -646,6 +647,7 @@ export default function AdminDashboard() {
                         </tbody>
                       </table>
                     </div>
+                    )}
                   </div>
                 )}
 

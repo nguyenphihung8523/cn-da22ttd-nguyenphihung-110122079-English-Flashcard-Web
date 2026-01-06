@@ -2,8 +2,11 @@ const Flashcard = require('../models/Flashcard');
 
 const getAll = async (req, res) => {
   try {
-    const { category } = req.query;
-    const filter = category ? { category } : {};
+    const { category, level, topic } = req.query;
+    const filter = {};
+    if (category) filter.category = category;
+    if (level) filter.level = level;
+    if (topic) filter.topic = topic;
     const cards = await Flashcard.find(filter).limit(200);
     res.json(cards);
   } catch (err) {
