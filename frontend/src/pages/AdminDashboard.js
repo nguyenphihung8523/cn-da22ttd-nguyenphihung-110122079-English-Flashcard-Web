@@ -616,12 +616,17 @@ export default function AdminDashboard() {
                         <h2 className="text-2xl font-bold text-gray-800">🏷️ Chủ đề - {selectedLevel}</h2>
                         <p className="text-gray-600 mt-1">Nhấn "Sửa" để xem các flashcard của chủ đề</p>
                       </div>
-                      <button 
-                        onClick={handleBackToLevels}
-                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-semibold"
-                      >
-                        ← Quay lại
-                      </button>
+                      <div className="flex gap-2">
+                        <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
+                          ➕ Thêm chủ đề
+                        </button>
+                        <button 
+                          onClick={handleBackToLevels}
+                          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-semibold"
+                        >
+                          ← Quay lại
+                        </button>
+                      </div>
                     </div>
                     {loading ? (
                       <div className="p-6 text-center">
@@ -673,12 +678,17 @@ export default function AdminDashboard() {
                         <h2 className="text-2xl font-bold text-gray-800">📇 Flashcards - {selectedTopic.name}</h2>
                         <p className="text-gray-600 mt-1">Cấp độ: {selectedLevel} • Nhấn vào thẻ để lật</p>
                       </div>
-                      <button 
-                        onClick={handleBackToTopics}
-                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-semibold"
-                      >
-                        ← Quay lại
-                      </button>
+                      <div className="flex gap-2">
+                        <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
+                          ➕ Thêm flashcard
+                        </button>
+                        <button 
+                          onClick={handleBackToTopics}
+                          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-semibold"
+                        >
+                          ← Quay lại
+                        </button>
+                      </div>
                     </div>
                     
                     {/* Flashcards Grid */}
