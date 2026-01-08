@@ -450,19 +450,73 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-4">
             {adminInfo && (
-              <span className="text-blue-200">
-                👤 {adminInfo.username}
-              </span>
+              <div className="relative">
+                <button
+                  onClick={() => setShowAdminProfile(!showAdminProfile)}
+                  className="flex items-center gap-2 px-3 py-2 bg-blue-700 hover:bg-blue-600 rounded-lg transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                    <span className="text-lg">👨‍💼</span>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold">{adminInfo.username}</p>
+                    <p className="text-xs text-blue-200">{adminInfo.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}</p>
+                  </div>
+                  <span className="text-blue-200">{showAdminProfile ? '▲' : '▼'}</span>
+                </button>
+                
+                {/* Dropdown Profile */}
+                {showAdminProfile && (
+                  <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl z-50 overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
+                          <span className="text-2xl">👨‍💼</span>
+                        </div>
+                        <div>
+                          <p className="font-bold">{adminInfo.username}</p>
+                          <p className="text-sm text-blue-200">{adminInfo.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <span>📧</span>
+                        <span className="text-sm">{adminInfo.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <span>🔑</span>
+                        <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                          {adminInfo.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <span>✅</span>
+                        <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">Hoạt động</span>
+                      </div>
+                      <hr className="my-2" />
+                      <button
+                        onClick={handleLogout}
+                        className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold text-sm"
+                      >
+                        🚪 Đăng xuất
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors"
-            >
-              🚪 Đăng xuất
-            </button>
           </div>
         </div>
       </header>
+
+      {/* Click outside to close dropdown */}
+      {showAdminProfile && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setShowAdminProfile(false)}
+        />
+      )}
 
       <div className="py-6 px-4">
         <div className="max-w-7xl mx-auto">
@@ -472,152 +526,36 @@ export default function AdminDashboard() {
           <p className="text-gray-600">Quản lý cấp độ, chủ đề, flashcards, người dùng và nội dung học tập</p>
         </div>
 
-        {/* Admin Profile Info */}
-        {adminInfo && !showAdminProfile && (
-          <div className="mb-8 bg-white rounded-lg shadow p-6 border-l-4 border-blue-600">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-1">👤 Thông tin hồ sơ</h2>
-                <div className="space-y-2">
-                  <p className="text-gray-700"><span className="font-semibold">Tên:</span> {adminInfo.username}</p>
-                  <p className="text-gray-700"><span className="font-semibold">Email:</span> {adminInfo.email}</p>
-                  <p className="text-gray-700"><span className="font-semibold">Quyền:</span> <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold text-sm">{adminInfo.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}</span></p>
-                </div>
-              </div>
-              <div className="text-right">
-                <button
-                  onClick={() => setShowAdminProfile(true)}
-                  className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                >
-                  <span className="text-2xl font-bold text-white">👨‍💼</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Admin Profile Page */}
-        {showAdminProfile && adminInfo && (
-          <div className="mb-8">
-            <button
-              onClick={() => setShowAdminProfile(false)}
-              className="mb-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-semibold"
-            >
-              ← Quay lại
-            </button>
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-8 text-white">
-                <div className="flex items-center gap-6">
-                  <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-lg">
-                    <span className="text-5xl">👨‍💼</span>
-                  </div>
-                  <div>
-                    <h1 className="text-4xl font-bold mb-2">{adminInfo.username}</h1>
-                    <p className="text-blue-100 text-lg">{adminInfo.email}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Thông tin cơ bản */}
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">📋 Thông tin cơ bản</h2>
-                    <div className="space-y-4">
-                      <div className="p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Tên người dùng</p>
-                        <p className="text-lg font-semibold text-gray-800">{adminInfo.username}</p>
-                      </div>
-                      <div className="p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Email</p>
-                        <p className="text-lg font-semibold text-gray-800">{adminInfo.email}</p>
-                      </div>
-                      <div className="p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Quyền</p>
-                        <p className="text-lg font-semibold">
-                          <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full">
-                            {adminInfo.role === 'admin' ? '⚙️ Quản trị viên' : '👤 Người dùng'}
-                          </span>
-                        </p>
-                      </div>
-                      <div className="p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Trạng thái</p>
-                        <p className="text-lg font-semibold">
-                          <span className="bg-green-100 text-green-800 px-4 py-2 rounded-full">
-                            ✓ Hoạt động
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Thống kê */}
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">📊 Thống kê</h2>
-                    <div className="space-y-4">
-                      <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-600">
-                        <p className="text-sm text-gray-600 mb-1">Tổng người dùng</p>
-                        <p className="text-3xl font-bold text-blue-600">{stats?.totalUsers || 0}</p>
-                      </div>
-                      <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-600">
-                        <p className="text-sm text-gray-600 mb-1">Người dùng hoạt động</p>
-                        <p className="text-3xl font-bold text-green-600">{stats?.activeUsers || 0}</p>
-                      </div>
-                      <div className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-600">
-                        <p className="text-sm text-gray-600 mb-1">Quản trị viên</p>
-                        <p className="text-3xl font-bold text-purple-600">{stats?.adminUsers || 0}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mô tả vai trò */}
-                <div className="mt-8 p-6 bg-blue-50 rounded-lg border-l-4 border-blue-600">
-                  <h3 className="text-xl font-bold text-gray-800 mb-3">🔐 Vai trò Quản trị viên</h3>
-                  <ul className="space-y-2 text-gray-700">
-                    <li>✓ Quản lý người dùng (xem, sửa, xóa, thay đổi quyền)</li>
-                    <li>✓ Quản lý flashcards (thêm, sửa, xóa)</li>
-                    <li>✓ Quản lý cấp độ và chủ đề</li>
-                    <li>✓ Quản lý nội dung luyện nói</li>
-                    <li>✓ Xem báo cáo và thống kê hệ thống</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Navigation Tabs */}
-        {!showAdminProfile && (
-          <div className="flex flex-wrap gap-2 mb-6 bg-white rounded-lg shadow p-2 overflow-x-auto">
-            <button
-              onClick={() => handleTabChange('users')}
-              className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
-                activeTab === 'users'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-              }`}
-            >
-              👥 Người dùng
-            </button>
-            <button
-              onClick={() => handleTabChange('flashcards')}
-              className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
-                activeTab === 'flashcards'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-              }`}
-            >
-              📚 Bài học
-            </button>
-            <button
-              onClick={() => handleTabChange('speaking')}
-              className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
-                activeTab === 'speaking'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-              }`}
-            >
+        <div className="flex flex-wrap gap-2 mb-6 bg-white rounded-lg shadow p-2 overflow-x-auto">
+          <button
+            onClick={() => handleTabChange('users')}
+            className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
+              activeTab === 'users'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+            }`}
+          >
+            👥 Người dùng
+          </button>
+          <button
+            onClick={() => handleTabChange('flashcards')}
+            className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
+              activeTab === 'flashcards'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+            }`}
+          >
+            📚 Bài học
+          </button>
+          <button
+            onClick={() => handleTabChange('speaking')}
+            className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
+              activeTab === 'speaking'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+            }`}
+          >
               🎤 Luyện nói
             </button>
             <button
@@ -631,55 +569,52 @@ export default function AdminDashboard() {
               📈 Báo cáo
             </button>
           </div>
-        )}
 
         {/* Content */}
-        {!showAdminProfile && (
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Đang tải dữ liệu...</p>
+          </div>
+        ) : (
           <>
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Đang tải dữ liệu...</p>
-              </div>
-            ) : (
-              <>
-                {/* Users Tab */}
-                {activeTab === 'users' && (
-                  <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <div className="p-6 border-b flex justify-between items-center">
-                      <h2 className="text-2xl font-bold text-gray-800">Quản lý người dùng</h2>
-                      <button
-                        onClick={() => setShowUserModal(true)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
-                      >
-                        ➕ Thêm người dùng
-                      </button>
-                    </div>
-                    {users.length === 0 ? (
-                      <div className="p-6 text-center">
-                        <p className="text-gray-600">Không có người dùng nào</p>
-                      </div>
-                    ) : (
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead className="bg-gray-50 border-b">
-                            <tr>
-                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tên</th>
-                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tài khoản</th>
-                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Quyền</th>
-                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Trạng thái</th>
-                              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {users.map((user) => (
-                              <tr key={user._id} className="border-b hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm text-gray-800">{user.username}</td>
-                                <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
-                                <td className="px-6 py-4 text-sm">
-                                  <select
-                                    value={user.role}
-                                    onChange={(e) => changeUserRole(user._id, e.target.value)}
+            {/* Users Tab */}
+            {activeTab === 'users' && (
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="p-6 border-b flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-800">Quản lý người dùng</h2>
+                  <button
+                    onClick={() => setShowUserModal(true)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
+                  >
+                    ➕ Thêm người dùng
+                  </button>
+                </div>
+                {users.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <p className="text-gray-600">Không có người dùng nào</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tên</th>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tài khoản</th>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Quyền</th>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Trạng thái</th>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {users.map((user) => (
+                          <tr key={user._id} className="border-b hover:bg-gray-50">
+                            <td className="px-6 py-4 text-sm text-gray-800">{user.username}</td>
+                            <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
+                            <td className="px-6 py-4 text-sm">
+                              <select
+                                value={user.role}
+                                onChange={(e) => changeUserRole(user._id, e.target.value)}
                                     className="px-2 py-1 border rounded text-sm"
                                   >
                                     <option value="user">User</option>
@@ -1229,8 +1164,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
-            )}
-              </>
             )}
           </>
         )}
