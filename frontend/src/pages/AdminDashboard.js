@@ -14,13 +14,21 @@ export default function AdminDashboard() {
   const [speakingContent, setSpeakingContent] = useState([]);
   const [loading, setLoading] = useState(false);
   const [adminInfo, setAdminInfo] = useState(null);
-  const [showAdminProfile, setShowAdminProfile] = useState(false);
+  const [showAdminDropdown, setShowAdminDropdown] = useState(false);
+  const [showAdminProfilePage, setShowAdminProfilePage] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
   const [showFlashcardModal, setShowFlashcardModal] = useState(false);
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [showSpeakingModal, setShowSpeakingModal] = useState(false);
   const [filterLevel, setFilterLevel] = useState('all');
   const [filterTopic, setFilterTopic] = useState('all');
+  
+  // Password change states
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
   
   // States for drill-down: Level -> Topic -> Flashcards
   const [selectedLevel, setSelectedLevel] = useState(null);
@@ -273,6 +281,48 @@ export default function AdminDashboard() {
     navigate('/login');
   };
 
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Mật khẩu mới không khớp!');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError('Mật khẩu mới phải có ít nhất 6 ký tự!');
+      return;
+    }
+
+    try {
+      const response = await API.put('/user/change-password', {
+        currentPassword,
+        newPassword
+      });
+
+      if (response.data.success) {
+        setPasswordSuccess('Đổi mật khẩu thành công!');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      }
+    } catch (error) {
+      setPasswordError(error.response?.data?.message || 'Lỗi đổi mật khẩu!');
+    }
+  };
+
+  const openAdminProfilePage = () => {
+    setShowAdminDropdown(false);
+    setShowAdminProfilePage(true);
+    setPasswordError('');
+    setPasswordSuccess('');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
+
   useEffect(() => {
     setPageState('admin', '/admin');
     const user = JSON.parse(localStorage.getItem('user'));
@@ -452,7 +502,7 @@ export default function AdminDashboard() {
             {adminInfo && (
               <div className="relative">
                 <button
-                  onClick={() => setShowAdminProfile(!showAdminProfile)}
+                  onClick={() => setShowAdminDropdown(!showAdminDropdown)}
                   className="flex items-center gap-2 px-3 py-2 bg-blue-700 hover:bg-blue-600 rounded-lg transition-colors"
                 >
                   <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
@@ -462,46 +512,26 @@ export default function AdminDashboard() {
                     <p className="text-sm font-semibold">{adminInfo.username}</p>
                     <p className="text-xs text-blue-200">{adminInfo.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}</p>
                   </div>
-                  <span className="text-blue-200">{showAdminProfile ? '▲' : '▼'}</span>
+                  <span className="text-blue-200">{showAdminDropdown ? '▲' : '▼'}</span>
                 </button>
                 
-                {/* Dropdown Profile */}
-                {showAdminProfile && (
-                  <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl z-50 overflow-hidden">
-                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
-                          <span className="text-2xl">👨‍💼</span>
-                        </div>
-                        <div>
-                          <p className="font-bold">{adminInfo.username}</p>
-                          <p className="text-sm text-blue-200">{adminInfo.email}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-4 space-y-3">
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <span>📧</span>
-                        <span className="text-sm">{adminInfo.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <span>🔑</span>
-                        <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                          {adminInfo.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <span>✅</span>
-                        <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">Hoạt động</span>
-                      </div>
-                      <hr className="my-2" />
-                      <button
-                        onClick={handleLogout}
-                        className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold text-sm"
-                      >
-                        🚪 Đăng xuất
-                      </button>
-                    </div>
+                {/* Dropdown Menu */}
+                {showAdminDropdown && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl z-50 overflow-hidden">
+                    <button
+                      onClick={openAdminProfilePage}
+                      className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 flex items-center gap-3 border-b"
+                    >
+                      <span className="text-lg">👤</span>
+                      <span className="font-medium">Thông tin quản trị viên</span>
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 flex items-center gap-3"
+                    >
+                      <span className="text-lg">🚪</span>
+                      <span className="font-medium">Đăng xuất</span>
+                    </button>
                   </div>
                 )}
               </div>
@@ -511,11 +541,137 @@ export default function AdminDashboard() {
       </header>
 
       {/* Click outside to close dropdown */}
-      {showAdminProfile && (
+      {showAdminDropdown && (
         <div 
           className="fixed inset-0 z-40" 
-          onClick={() => setShowAdminProfile(false)}
+          onClick={() => setShowAdminDropdown(false)}
         />
+      )}
+
+      {/* Admin Profile Page */}
+      {showAdminProfilePage && adminInfo && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white rounded-t-xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg">
+                    <span className="text-4xl">👨‍💼</span>
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold">{adminInfo.username}</h2>
+                    <p className="text-blue-200">{adminInfo.email}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowAdminProfilePage(false)}
+                  className="text-white hover:text-blue-200 text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Thông tin cơ bản */}
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">📋 Thông tin cơ bản</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">Tên người dùng</p>
+                    <p className="text-lg font-semibold text-gray-800">{adminInfo.username}</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">Email</p>
+                    <p className="text-lg font-semibold text-gray-800">{adminInfo.email}</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">Quyền</p>
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
+                      {adminInfo.role === 'admin' ? '⚙️ Quản trị viên' : '👤 Người dùng'}
+                    </span>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">Trạng thái</p>
+                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">
+                      ✓ Hoạt động
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Đổi mật khẩu */}
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">🔐 Đổi mật khẩu</h3>
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu hiện tại</label>
+                    <input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Nhập mật khẩu hiện tại"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu mới</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu mới</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Nhập lại mật khẩu mới"
+                      required
+                    />
+                  </div>
+
+                  {passwordError && (
+                    <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+                      ❌ {passwordError}
+                    </div>
+                  )}
+
+                  {passwordSuccess && (
+                    <div className="p-3 bg-green-100 text-green-700 rounded-lg text-sm">
+                      ✅ {passwordSuccess}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+                  >
+                    💾 Đổi mật khẩu
+                  </button>
+                </form>
+              </div>
+
+              {/* Nút đóng */}
+              <div className="pt-4 border-t">
+                <button
+                  onClick={() => setShowAdminProfilePage(false)}
+                  className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold"
+                >
+                  ← Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="py-6 px-4">
