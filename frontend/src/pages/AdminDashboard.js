@@ -674,90 +674,104 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      <div className="py-6 px-4">
-        <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">⚙️ Quản lý Hệ thống</h1>
-          <p className="text-gray-600">Quản lý cấp độ, chủ đề, flashcards, người dùng và nội dung học tập</p>
-        </div>
+      <div className="flex">
+        {/* Sidebar Menu */}
+        <aside className="w-64 min-h-screen bg-gradient-to-b from-blue-800 to-blue-900 text-white shadow-xl">
+          <div className="p-4">
+            <h2 className="text-lg font-bold text-blue-200 mb-4">📋 Menu quản lý</h2>
+            <nav className="space-y-2">
+              <button
+                onClick={() => handleTabChange('users')}
+                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
+                  activeTab === 'users'
+                    ? 'bg-white text-blue-800 shadow-lg'
+                    : 'bg-blue-700 hover:bg-blue-600 text-white'
+                }`}
+              >
+                <span className="text-xl">👥</span>
+                <span>Người dùng</span>
+              </button>
+              <button
+                onClick={() => handleTabChange('flashcards')}
+                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
+                  activeTab === 'flashcards'
+                    ? 'bg-white text-blue-800 shadow-lg'
+                    : 'bg-blue-700 hover:bg-blue-600 text-white'
+                }`}
+              >
+                <span className="text-xl">📚</span>
+                <span>Bài học</span>
+              </button>
+              <button
+                onClick={() => handleTabChange('speaking')}
+                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
+                  activeTab === 'speaking'
+                    ? 'bg-white text-blue-800 shadow-lg'
+                    : 'bg-blue-700 hover:bg-blue-600 text-white'
+                }`}
+              >
+                <span className="text-xl">🎤</span>
+                <span>Luyện nói</span>
+              </button>
+              <button
+                onClick={() => handleTabChange('reports')}
+                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
+                  activeTab === 'reports'
+                    ? 'bg-white text-blue-800 shadow-lg'
+                    : 'bg-blue-700 hover:bg-blue-600 text-white'
+                }`}
+              >
+                <span className="text-xl">📈</span>
+                <span>Báo cáo</span>
+              </button>
+            </nav>
+          </div>
+        </aside>
 
-        {/* Navigation Tabs */}
-        <div className="flex flex-wrap gap-2 mb-6 bg-white rounded-lg shadow p-2 overflow-x-auto">
-          <button
-            onClick={() => handleTabChange('users')}
-            className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'users'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            }`}
-          >
-            👥 Người dùng
-          </button>
-          <button
-            onClick={() => handleTabChange('flashcards')}
-            className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'flashcards'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            }`}
-          >
-            📚 Bài học
-          </button>
-          <button
-            onClick={() => handleTabChange('speaking')}
-            className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'speaking'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            }`}
-          >
-              🎤 Luyện nói
-            </button>
-            <button
-              onClick={() => handleTabChange('reports')}
-              className={`px-4 py-2 rounded font-semibold transition-all whitespace-nowrap ${
-                activeTab === 'reports'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-              }`}
-            >
-              📈 Báo cáo
-            </button>
+        {/* Main Content */}
+        <main className="flex-1 p-6 bg-gray-100 min-h-screen">
+          {/* Page Header */}
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-800">
+              {activeTab === 'users' && '👥 Quản lý Người dùng'}
+              {activeTab === 'flashcards' && '📚 Quản lý Bài học'}
+              {activeTab === 'speaking' && '🎤 Quản lý Luyện nói'}
+              {activeTab === 'reports' && '📈 Báo cáo & Thống kê'}
+            </h1>
           </div>
 
-        {/* Content */}
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Đang tải dữ liệu...</p>
-          </div>
-        ) : (
-          <>
-            {/* Users Tab */}
-            {activeTab === 'users' && (
-              <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="p-6 border-b flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-gray-800">Quản lý người dùng</h2>
-                  <button
-                    onClick={() => setShowUserModal(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
-                  >
-                    ➕ Thêm người dùng
-                  </button>
-                </div>
-                {users.length === 0 ? (
-                  <div className="p-6 text-center">
-                    <p className="text-gray-600">Không có người dùng nào</p>
+          {/* Content */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Đang tải dữ liệu...</p>
+            </div>
+          ) : (
+            <>
+              {/* Users Tab */}
+              {activeTab === 'users' && (
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                  <div className="p-6 border-b flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-gray-800">Quản lý người dùng</h2>
+                    <button
+                      onClick={() => setShowUserModal(true)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
+                    >
+                      ➕ Thêm người dùng
+                    </button>
                   </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 border-b">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tên</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tài khoản</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Quyền</th>
+                  {users.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <p className="text-gray-600">Không có người dùng nào</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50 border-b">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tên</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tài khoản</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Quyền</th>
                           <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Trạng thái</th>
                           <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
                         </tr>
@@ -1321,9 +1335,9 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
-          </>
-        )}
-        </div>
+            </>
+          )}
+        </main>
       </div>
     </div>
   );
