@@ -490,13 +490,9 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <header className="fixed top-0 left-64 right-0 h-16 bg-white shadow-md z-30 flex items-center justify-between px-6">
-        <div>
-          <h1 className="text-xl font-bold text-gray-800">
-            {activeTab === 'users' && '👥 Quản lý Người dùng'}
-            {activeTab === 'flashcards' && '📚 Quản lý Bài học'}
-            {activeTab === 'speaking' && '🎤 Quản lý Luyện nói'}
-            {activeTab === 'reports' && '📈 Báo cáo & Thống kê'}
-          </h1>
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">⚙️</span>
+          <h1 className="text-xl font-bold text-gray-800">Admin Panel</h1>
         </div>
         {adminInfo && (
           <div className="flex items-center gap-3">
