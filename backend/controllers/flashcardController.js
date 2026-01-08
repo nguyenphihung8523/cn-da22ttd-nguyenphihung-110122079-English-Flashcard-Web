@@ -8,9 +8,19 @@ const getAll = async (req, res) => {
     const filter = {};
     if (category) filter.category = category;
     if (level) filter.level = level;
-    if (topic) filter.topic = topic;
     
-    console.log('🔍 Filter:', filter);
+    // Nếu có topic, tìm theo topic hoặc category chứa topic
+    if (topic) {
+      const categoryPattern = level ? `${level}-${topic}` : topic;
+      filter.$or = [
+        { topic: topic },
+        { category: categoryPattern },
+        { category: topic }
+      ];
+      delete filter.level; // Xóa level khỏi filter chính vì đã có trong $or
+    }
+    
+    console.log('🔍 Filter:', JSON.stringify(filter));
     
     const cards = await Flashcard.find(filter).limit(200);
     console.log(`📊 Found ${cards.length} cards`);

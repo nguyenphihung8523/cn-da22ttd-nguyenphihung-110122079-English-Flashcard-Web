@@ -39,4 +39,42 @@ router.delete('/quiz-questions/:id', auth, isAdmin, adminController.deleteQuizQu
 router.get('/stats', auth, isAdmin, adminController.getSystemStats);
 router.get('/activity', auth, isAdmin, adminController.getUserActivity);
 
+// ============ FEEDBACK MANAGEMENT ============
+router.get('/feedbacks', auth, isAdmin, adminController.getAllFeedbacks);
+router.patch('/feedbacks/:userId/:feedbackId', auth, isAdmin, adminController.updateFeedbackStatus);
+router.patch('/feedbacks/:userId/:feedbackId/reply', auth, isAdmin, adminController.replyToFeedback);
+
+// ============ LEVEL MANAGEMENT ============
+router.get('/levels', auth, isAdmin, adminController.getAllLevels);
+router.post('/levels', auth, isAdmin, adminController.createLevel);
+router.put('/levels/:id', auth, isAdmin, adminController.updateLevel);
+router.delete('/levels/:id', auth, isAdmin, adminController.deleteLevel);
+
+// ============ TOPIC MANAGEMENT ============
+router.get('/topics', auth, isAdmin, adminController.getAllTopics);
+router.get('/topics/level/:levelId', auth, isAdmin, adminController.getTopicsByLevel);
+router.post('/topics', auth, isAdmin, adminController.createTopic);
+router.put('/topics/:levelId/:id', auth, isAdmin, adminController.updateTopic);
+router.delete('/topics/:levelId/:id', auth, isAdmin, adminController.deleteTopic);
+
+// ============ SPEAKING TOPIC MANAGEMENT ============
+router.get('/speaking-topics', auth, isAdmin, adminController.getAllSpeakingTopics);
+router.get('/speaking-topics/level/:levelId', auth, isAdmin, adminController.getSpeakingTopicsByLevel);
+router.post('/speaking-topics', auth, isAdmin, adminController.createSpeakingTopic);
+router.put('/speaking-topics/:levelId/:id', auth, isAdmin, adminController.updateSpeakingTopic);
+router.delete('/speaking-topics/:levelId/:id', auth, isAdmin, adminController.deleteSpeakingTopic);
+
+// ============ SPEAKING ITEM MANAGEMENT ============
+router.get('/speaking-items', auth, isAdmin, adminController.getAllSpeakingItems);
+router.get('/speaking-items/:levelId/:topicId', auth, isAdmin, adminController.getSpeakingItemsByTopic);
+router.post('/speaking-items', auth, isAdmin, adminController.createSpeakingItem);
+router.put('/speaking-items/:id', auth, isAdmin, adminController.updateSpeakingItem);
+router.delete('/speaking-items/:id', auth, isAdmin, adminController.deleteSpeakingItem);
+
+// ============ SPEAKING LEVEL MANAGEMENT ============
+router.get('/speaking-levels', auth, isAdmin, adminController.getAllSpeakingLevels);
+router.post('/speaking-levels', auth, isAdmin, adminController.createSpeakingLevel);
+router.put('/speaking-levels/:id', auth, isAdmin, adminController.updateSpeakingLevel);
+router.delete('/speaking-levels/:id', auth, isAdmin, adminController.deleteSpeakingLevel);
+
 module.exports = router;

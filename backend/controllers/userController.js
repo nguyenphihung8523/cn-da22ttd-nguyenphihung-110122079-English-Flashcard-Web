@@ -190,6 +190,38 @@ const deleteCustomFlashcard = async (req, res) => {
   }
 };
 
+// Gửi phản hồi
+const sendFeedback = async (req, res) => {
+  try {
+    const { type, subject, message } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    if (!user.feedbacks) {
+      user.feedbacks = [];
+    }
+
+    const newFeedback = {
+      type,
+      subject,
+      message,
+      status: 'pending',
+      createdAt: new Date()
+    };
+
+    user.feedbacks.push(newFeedback);
+    await user.save();
+
+    res.json({ message: 'Gửi phản hồi thành công', feedback: newFeedback });
+  } catch (err) {
+    console.error('Lỗi gửi phản hồi:', err);
+    res.status(500).json({ message: 'Lỗi gửi phản hồi' });
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
@@ -201,5 +233,6 @@ module.exports = {
   getFavorites,
   addCustomFlashcard,
   getCustomFlashcards,
-  deleteCustomFlashcard
+  deleteCustomFlashcard,
+  sendFeedback
 };

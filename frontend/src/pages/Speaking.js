@@ -22,6 +22,11 @@ export default function Speaking() {
   const [showMeaning, setShowMeaning] = useState(true);
   const [slowSpeed, setSlowSpeed] = useState(false);
   
+  // Data from API
+  const [levels, setLevels] = useState([]);
+  const [topicsForLevel, setTopicsForLevel] = useState([]);
+  const [loadingData, setLoadingData] = useState(false);
+  
   // Session management
   const [currentSession, setCurrentSession] = useState(null);
   const [sessionStats, setSessionStats] = useState({
@@ -52,140 +57,80 @@ export default function Speaking() {
   useEffect(() => {
     setPageState('speaking', '/speaking');
     loadRecommendations();
+    loadSpeakingLevels();
   }, [setPageState]);
 
-  // Speaking items data
-  const speakingData = {
-    basic: {
-      animals: [
-        { id: 1, text: 'Cat', meaning: 'Con mèo' },
-        { id: 2, text: 'Dog', meaning: 'Con chó' },
-        { id: 3, text: 'Bird', meaning: 'Con chim' },
-        { id: 4, text: 'Fish', meaning: 'Con cá' },
-        { id: 5, text: 'Rabbit', meaning: 'Con thỏ' },
-        { id: 6, text: 'Horse', meaning: 'Con ngựa' },
-        { id: 7, text: 'Elephant', meaning: 'Con voi' },
-        { id: 8, text: 'Lion', meaning: 'Sư tử' }
-      ],
-      fruits: [
-        { id: 1, text: 'Apple', meaning: 'Quả táo' },
-        { id: 2, text: 'Banana', meaning: 'Quả chuối' },
-        { id: 3, text: 'Orange', meaning: 'Quả cam' },
-        { id: 4, text: 'Strawberry', meaning: 'Quả dâu' },
-        { id: 5, text: 'Grape', meaning: 'Quả nho' },
-        { id: 6, text: 'Watermelon', meaning: 'Quả dưa hấu' },
-        { id: 7, text: 'Mango', meaning: 'Quả xoài' },
-        { id: 8, text: 'Pineapple', meaning: 'Quả dứa' }
-      ],
-      colors: [
-        { id: 1, text: 'Red', meaning: 'Màu đỏ' },
-        { id: 2, text: 'Blue', meaning: 'Màu xanh dương' },
-        { id: 3, text: 'Green', meaning: 'Màu xanh lá' },
-        { id: 4, text: 'Yellow', meaning: 'Màu vàng' },
-        { id: 5, text: 'Black', meaning: 'Màu đen' },
-        { id: 6, text: 'White', meaning: 'Màu trắng' },
-        { id: 7, text: 'Purple', meaning: 'Màu tím' },
-        { id: 8, text: 'Pink', meaning: 'Màu hồng' }
-      ],
-      family: [
-        { id: 1, text: 'Mother', meaning: 'Mẹ' },
-        { id: 2, text: 'Father', meaning: 'Bố' },
-        { id: 3, text: 'Sister', meaning: 'Chị/Em gái' },
-        { id: 4, text: 'Brother', meaning: 'Anh/Em trai' },
-        { id: 5, text: 'Grandmother', meaning: 'Bà' },
-        { id: 6, text: 'Grandfather', meaning: 'Ông' },
-        { id: 7, text: 'Aunt', meaning: 'Cô/Dì' },
-        { id: 8, text: 'Uncle', meaning: 'Chú/Bác' }
-      ]
-    },
-    conversation: {
-      daily: [
-        { id: 1, text: 'Good morning. How are you today?', meaning: 'Chào buổi sáng. Hôm nay bạn khỏe không?' },
-        { id: 2, text: 'What time is it?', meaning: 'Mấy giờ rồi?' },
-        { id: 3, text: 'Have a nice day!', meaning: 'Chúc bạn một ngày tốt lành!' },
-        { id: 4, text: 'See you later.', meaning: 'Hẹn gặp lại.' },
-        { id: 5, text: 'How was your weekend?', meaning: 'Cuối tuần của bạn thế nào?' },
-        { id: 6, text: 'What are you doing?', meaning: 'Bạn đang làm gì?' },
-        { id: 7, text: 'Nice to meet you.', meaning: 'Rất vui được gặp bạn.' },
-        { id: 8, text: 'Thank you very much.', meaning: 'Cảm ơn bạn rất nhiều.' }
-      ],
-      shopping: [
-        { id: 1, text: 'How much is this?', meaning: 'Cái này giá bao nhiêu?' },
-        { id: 2, text: 'Do you have this in another size?', meaning: 'Bạn có size khác không?' },
-        { id: 3, text: 'Can I try this on?', meaning: 'Tôi có thể thử không?' },
-        { id: 4, text: 'Where is the fitting room?', meaning: 'Phòng thử đồ ở đâu?' },
-        { id: 5, text: 'I would like to pay.', meaning: 'Tôi muốn thanh toán.' },
-        { id: 6, text: 'Do you accept credit cards?', meaning: 'Bạn có chấp nhận thẻ tín dụng không?' },
-        { id: 7, text: 'Can I get a receipt?', meaning: 'Tôi có thể lấy hóa đơn không?' },
-        { id: 8, text: 'Thank you for your help.', meaning: 'Cảm ơn bạn đã giúp đỡ.' }
-      ],
-      restaurant: [
-        { id: 1, text: 'A table for two, please.', meaning: 'Một bàn cho hai người.' },
-        { id: 2, text: 'What do you recommend?', meaning: 'Bạn khuyên gì?' },
-        { id: 3, text: 'I would like to order.', meaning: 'Tôi muốn gọi món.' },
-        { id: 4, text: 'Can I have the menu?', meaning: 'Tôi có thể lấy thực đơn không?' },
-        { id: 5, text: 'Is this spicy?', meaning: 'Cái này có cay không?' },
-        { id: 6, text: 'Can I have the bill?', meaning: 'Tôi có thể lấy hóa đơn không?' },
-        { id: 7, text: 'The food is delicious!', meaning: 'Món ăn ngon quá!' },
-        { id: 8, text: 'Thank you for the meal.', meaning: 'Cảm ơn bữa ăn ngon lành.' }
-      ],
-      travel: [
-        { id: 1, text: 'Where is the train station?', meaning: 'Ga tàu ở đâu?' },
-        { id: 2, text: 'How do I get to the airport?', meaning: 'Làm thế nào để đến sân bay?' },
-        { id: 3, text: 'Can you help me with directions?', meaning: 'Bạn có thể giúp tôi chỉ đường không?' },
-        { id: 4, text: 'How much is a ticket?', meaning: 'Vé giá bao nhiêu?' },
-        { id: 5, text: 'What time does the bus leave?', meaning: 'Xe buýt khởi hành lúc mấy giờ?' },
-        { id: 6, text: 'Is this the right way?', meaning: 'Đây có phải là đường đúng không?' },
-        { id: 7, text: 'Can you recommend a hotel?', meaning: 'Bạn có thể giới thiệu khách sạn không?' },
-        { id: 8, text: 'Thank you for your help.', meaning: 'Cảm ơn bạn đã giúp đỡ.' }
-      ]
-    },
-    paragraph: {
-      phone: [
-        { id: 1, text: 'The telephone has revolutionized communication across the world. It allows people to connect instantly regardless of distance.', meaning: 'Điện thoại đã cách mạng hóa giao tiếp trên toàn thế giới. Nó cho phép mọi người kết nối ngay lập tức bất kể khoảng cách.' },
-        { id: 2, text: 'Mobile phones have become an essential part of modern life. They provide not only voice communication but also internet access and entertainment.', meaning: 'Điện thoại di động đã trở thành một phần thiết yếu của cuộc sống hiện đại. Chúng cung cấp không chỉ giao tiếp thoại mà còn truy cập internet và giải trí.' },
-        { id: 3, text: 'Video calling technology has changed how families stay connected. People can now see and hear their loved ones in real time from anywhere in the world.', meaning: 'Công nghệ gọi video đã thay đổi cách các gia đình kết nối với nhau. Mọi người giờ đây có thể nhìn thấy và nghe những người thân yêu của họ trong thời gian thực từ bất kỳ nơi nào trên thế giới.' },
-        { id: 4, text: 'The history of telecommunications spans over a century. From the first telephone invented by Alexander Graham Bell to modern smartphones, technology has continuously evolved.', meaning: 'Lịch sử viễn thông kéo dài hơn một thế kỷ. Từ chiếc điện thoại đầu tiên được phát minh bởi Alexander Graham Bell đến các điện thoại thông minh hiện đại, công nghệ đã liên tục phát triển.' },
-        { id: 5, text: 'Telephone etiquette is important in professional settings. Speaking clearly and listening carefully are essential skills for effective communication.', meaning: 'L礼节điện thoại rất quan trọng trong các môi trường chuyên nghiệp. Nói rõ ràng và lắng nghe cẩn thận là những kỹ năng thiết yếu để giao tiếp hiệu quả.' },
-        { id: 6, text: 'Long distance calls were once extremely expensive and limited to important matters. Today, thanks to internet technology, people can communicate freely across continents.', meaning: 'Các cuộc gọi đường dài từng cực kỳ đắt tiền và chỉ giới hạn ở những vấn đề quan trọng. Ngày nay, nhờ công nghệ internet, mọi người có thể giao tiếp tự do trên các lục địa.' },
-        { id: 7, text: 'The development of 5G technology promises faster and more reliable connections. This advancement will enable new applications in healthcare, transportation, and education.', meaning: 'Sự phát triển của công nghệ 5G hứa hẹn những kết nối nhanh hơn và đáng tin cậy hơn. Sự tiến bộ này sẽ cho phép các ứng dụng mới trong chăm sóc sức khỏe, vận tải và giáo dục.' },
-        { id: 8, text: 'Telephone systems have become more sophisticated with artificial intelligence. Voice recognition and automated responses now handle many routine inquiries efficiently.', meaning: 'Các hệ thống điện thoại đã trở nên tinh vi hơn với trí tuệ nhân tạo. Nhận dạng giọng nói và phản hồi tự động giờ đây xử lý hiệu quả nhiều yêu cầu thường xuyên.' }
-      ],
-      business: [
-        { id: 1, text: 'Business communication is the foundation of successful organizations. Effective communication ensures that all team members understand company goals and work together efficiently.', meaning: 'Giao tiếp kinh doanh là nền tảng của các tổ chức thành công. Giao tiếp hiệu quả đảm bảo rằng tất cả các thành viên trong nhóm hiểu được mục tiêu công ty và làm việc cùng nhau một cách hiệu quả.' },
-        { id: 2, text: 'Corporate meetings are essential for decision making and strategic planning. They bring together different departments to discuss challenges and opportunities.', meaning: 'Các cuộc họp công ty là thiết yếu để ra quyết định và lập kế hoạch chiến lược. Chúng tập hợp các bộ phận khác nhau để thảo luận về những thách thức và cơ hội.' },
-        { id: 3, text: 'Professional presentations require careful preparation and clear communication. A well-structured presentation can persuade stakeholders and drive business growth.', meaning: 'Các bài thuyết trình chuyên nghiệp đòi hỏi chuẩn bị cẩn thận và giao tiếp rõ ràng. Một bài thuyết trình được cấu trúc tốt có thể thuyết phục các bên liên quan và thúc đẩy tăng trưởng kinh doanh.' },
-        { id: 4, text: 'Leadership in business requires strong communication skills and the ability to inspire teams. Great leaders listen to their employees and create an environment of trust and collaboration.', meaning: 'Lãnh đạo trong kinh doanh đòi hỏi kỹ năng giao tiếp mạnh mẽ và khả năng truyền cảm hứng cho các nhóm. Những nhà lãnh đạo tuyệt vời lắng nghe nhân viên của họ và tạo ra một môi trường tin tưởng và hợp tác.' },
-        { id: 5, text: 'Market research helps businesses understand customer needs and preferences. By analyzing data and gathering feedback, companies can develop products that meet market demands.', meaning: 'Nghiên cứu thị trường giúp các doanh nghiệp hiểu nhu cầu và sở thích của khách hàng. Bằng cách phân tích dữ liệu và thu thập phản hồi, các công ty có thể phát triển các sản phẩm đáp ứng nhu cầu thị trường.' },
-        { id: 6, text: 'Financial management is crucial for business sustainability. Companies must carefully budget their resources and invest wisely to ensure long-term profitability and growth.', meaning: 'Quản lý tài chính rất quan trọng cho sự bền vững của doanh nghiệp. Các công ty phải cẩn thận lập ngân sách cho các tài nguyên của họ và đầu tư khôn ngoan để đảm bảo lợi nhuận và tăng trưởng lâu dài.' },
-        { id: 7, text: 'Supply chain management involves coordinating all activities from production to delivery. Efficient supply chains reduce costs and improve customer satisfaction.', meaning: 'Quản lý chuỗi cung ứng liên quan đến việc phối hợp tất cả các hoạt động từ sản xuất đến giao hàng. Các chuỗi cung ứng hiệu quả giảm chi phí và cải thiện sự hài lòng của khách hàng.' },
-        { id: 8, text: 'Digital transformation is reshaping modern business practices. Companies are adopting new technologies to improve efficiency, enhance customer experience, and stay competitive in the global market.', meaning: 'Chuyển đổi kỹ thuật số đang định hình lại các thực tiễn kinh doanh hiện đại. Các công ty đang áp dụng các công nghệ mới để cải thiện hiệu quả, nâng cao trải nghiệm khách hàng và duy trì tính cạnh tranh trên thị trường toàn cầu.' }
-      ],
-      technology: [
-        { id: 1, text: 'Artificial intelligence is transforming industries and changing how we work. Machine learning algorithms can now analyze vast amounts of data and make predictions with remarkable accuracy.', meaning: 'Trí tuệ nhân tạo đang chuyển đổi các ngành công nghiệp và thay đổi cách chúng ta làm việc. Các thuật toán học máy giờ đây có thể phân tích lượng dữ liệu khổng lồ và đưa ra dự đoán với độ chính xác đáng kể.' },
-        { id: 2, text: 'Cloud computing has revolutionized data storage and accessibility. Organizations can now store information securely and access it from anywhere in the world.', meaning: 'Điện toán đám mây đã cách mạng hóa lưu trữ và khả năng truy cập dữ liệu. Các tổ chức giờ đây có thể lưu trữ thông tin một cách an toàn và truy cập nó từ bất kỳ nơi nào trên thế giới.' },
-        { id: 3, text: 'Cybersecurity is increasingly important as digital threats continue to evolve. Protecting sensitive data requires multiple layers of security and constant vigilance.', meaning: 'An ninh mạng ngày càng trở nên quan trọng khi các mối đe dọa kỹ thuật số tiếp tục phát triển. Bảo vệ dữ liệu nhạy cảm đòi hỏi nhiều lớp bảo mật và sự cảnh báo liên tục.' },
-        { id: 4, text: 'The Internet of Things connects billions of devices worldwide. Smart homes, wearable devices, and connected vehicles are creating a more integrated and efficient world.', meaning: 'Internet of Things kết nối hàng tỷ thiết bị trên toàn thế giới. Nhà thông minh, thiết bị đeo được và xe kết nối đang tạo ra một thế giới tích hợp và hiệu quả hơn.' },
-        { id: 5, text: 'Blockchain technology provides secure and transparent transactions. It has applications beyond cryptocurrency, including supply chain management and digital contracts.', meaning: 'Công nghệ blockchain cung cấp các giao dịch an toàn và minh bạch. Nó có các ứng dụng ngoài tiền điện tử, bao gồm quản lý chuỗi cung ứng và hợp đồng kỹ thuật số.' },
-        { id: 6, text: 'Virtual reality and augmented reality are creating immersive experiences. These technologies are being used in education, entertainment, and professional training.', meaning: 'Thực tế ảo và thực tế tăng cường đang tạo ra những trải nghiệm sâu sắc. Các công nghệ này đang được sử dụng trong giáo dục, giải trí và đào tạo chuyên nghiệp.' },
-        { id: 7, text: 'Quantum computing represents the next frontier in computational power. It promises to solve complex problems that are currently impossible for traditional computers.', meaning: 'Máy tính lượng tử đại diện cho biên giới tiếp theo trong sức mạnh tính toán. Nó hứa hẹn giải quyết các vấn đề phức tạp hiện không thể giải quyết được bằng máy tính truyền thống.' },
-        { id: 8, text: 'Software development has evolved significantly with agile methodologies and continuous integration. Modern development practices enable faster deployment and better quality assurance.', meaning: 'Phát triển phần mềm đã phát triển đáng kể với các phương pháp agile và tích hợp liên tục. Các thực tiễn phát triển hiện đại cho phép triển khai nhanh hơn và đảm bảo chất lượng tốt hơn.' }
-      ]
+  // Load speaking levels from API
+  const loadSpeakingLevels = async () => {
+    try {
+      setLoadingData(true);
+      const response = await API.get('/speaking/levels');
+      if (response.data.success) {
+        setLevels(response.data.levels);
+      }
+    } catch (error) {
+      console.error('Lỗi tải cấp độ:', error);
+      // Fallback to default levels
+      setLevels([
+        { id: 'basic', name: 'Cơ bản', icon: '🌱', description: 'Từ vựng đơn giản' },
+        { id: 'conversation', name: 'Giao tiếp', icon: '💬', description: 'Hội thoại hàng ngày' },
+        { id: 'paragraph', name: 'Đoạn văn', icon: '📝', description: 'Đoạn văn mẫu' }
+      ]);
+    } finally {
+      setLoadingData(false);
     }
   };
+
+  // Load topics for a level from API
+  const loadTopicsForLevel = async (levelId) => {
+    try {
+      setLoadingData(true);
+      const response = await API.get(`/speaking/topics/${levelId}`);
+      if (response.data.success) {
+        setTopicsForLevel(response.data.topics);
+      }
+    } catch (error) {
+      console.error('Lỗi tải chủ đề:', error);
+      setTopicsForLevel([]);
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  // Load speaking items for a topic from API
+  const loadSpeakingItemsFromAPI = async (levelId, topicId) => {
+    try {
+      setLoadingData(true);
+      const response = await API.get(`/speaking/items/${levelId}/${topicId}`);
+      if (response.data.success) {
+        return response.data.items;
+      }
+      return [];
+    } catch (error) {
+      console.error('Lỗi tải mục luyện tập:', error);
+      return [];
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+
   // Level selection
-  const selectLevel = (level) => {
+  const selectLevel = async (level) => {
     setSelectedLevel(level);
     setSelectedTopic(null);
     setCurrentItemIndex(0);
     setSpeakingItems([]);
     resetSession();
+    // Load topics for this level from API
+    await loadTopicsForLevel(level);
   };
 
   // Topic selection and session start
   const selectTopic = async (topic) => {
     setSelectedTopic(topic);
-    const items = speakingData[selectedLevel][topic];
+    // Load items from API instead of hardcoded data
+    const items = await loadSpeakingItemsFromAPI(selectedLevel, topic);
     setSpeakingItems(items);
     setCurrentItemIndex(0);
     resetSession();
@@ -206,7 +151,7 @@ export default function Speaking() {
       setCurrentSession(response.data.sessionId);
       setSessionStats({
         completedItems: 0,
-        totalItems: speakingData[level][topic].length,
+        totalItems: speakingItems.length,
         averageAccuracy: 0,
         pronunciationScore: 0
       });
@@ -480,23 +425,32 @@ export default function Speaking() {
         const allResults = response.data.stats.topicPerformance || {};
         
         const mistakes = [];
-        Object.entries(allResults).forEach(([key, topic]) => {
+        
+        // Lấy items từ API cho mỗi topic có độ chính xác thấp
+        for (const [key, topic] of Object.entries(allResults)) {
           // Chỉ lấy những topic đã luyện (totalItems > 0) và có độ chính xác < 70%
           if (topic.totalItems > 0 && topic.averageAccuracy < 70) {
-            // Lấy các item từ speakingData dựa trên level và topic
-            const items = speakingData[topic.level]?.[topic.topic] || [];
-            items.forEach(item => {
-              mistakes.push({
-                id: `${topic.level}-${topic.topic}-${item.id}`,
-                text: item.text,
-                meaning: item.meaning,
-                level: topic.level,
-                topic: topic.topic,
-                accuracy: topic.averageAccuracy
-              });
-            });
+            try {
+              // Gọi API để lấy items cho topic này
+              const itemsResponse = await API.get(`/speaking/items/${topic.level}/${topic.topic}`);
+              if (itemsResponse.data.success) {
+                const items = itemsResponse.data.items || [];
+                items.forEach(item => {
+                  mistakes.push({
+                    id: `${topic.level}-${topic.topic}-${item.id || item._id}`,
+                    text: item.text,
+                    meaning: item.meaning,
+                    level: topic.level,
+                    topic: topic.topic,
+                    accuracy: topic.averageAccuracy
+                  });
+                });
+              }
+            } catch (itemError) {
+              console.error(`Lỗi tải items cho ${topic.level}/${topic.topic}:`, itemError);
+            }
           }
-        });
+        }
         
         setMistakeItems(mistakes);
         setMistakeItemIndex(0);
@@ -564,34 +518,9 @@ export default function Speaking() {
   // Get current item
   const currentItem = speakingItems[currentItemIndex];
 
-  // Level and topic options
-  const levels = [
-    { id: 'basic', name: 'Cơ bản', icon: '🌱', description: 'Từ vựng đơn giản' },
-    { id: 'conversation', name: 'Giao tiếp', icon: '💬', description: 'Hội thoại hàng ngày' },
-    { id: 'paragraph', name: 'Đoạn văn', icon: '📝', description: 'Đoạn văn mẫu' }
-  ];
-
+  // Get topics for level (from API data)
   const getTopicsForLevel = (level) => {
-    const topicMap = {
-      basic: [
-        { id: 'animals', name: 'Động vật', icon: '🐾' },
-        { id: 'fruits', name: 'Trái cây', icon: '🍎' },
-        { id: 'colors', name: 'Màu sắc', icon: '🎨' },
-        { id: 'family', name: 'Gia đình', icon: '👨‍👩‍👧‍👦' }
-      ],
-      conversation: [
-        { id: 'daily', name: 'Hàng ngày', icon: '☀️' },
-        { id: 'shopping', name: 'Mua sắm', icon: '🛒' },
-        { id: 'restaurant', name: 'Nhà hàng', icon: '🍽️' },
-        { id: 'travel', name: 'Du lịch', icon: '✈️' }
-      ],
-      paragraph: [
-        { id: 'phone', name: 'Điện thoại', icon: '📞' },
-        { id: 'business', name: 'Kinh doanh', icon: '💼' },
-        { id: 'technology', name: 'Công nghệ', icon: '💻' }
-      ]
-    };
-    return topicMap[level] || [];
+    return topicsForLevel;
   };
 
   return (
@@ -711,7 +640,7 @@ export default function Speaking() {
                             <div className="flex-1">
                               <h4 className="font-bold text-gray-800">{topic.name}</h4>
                               <p className="text-sm text-gray-600">
-                                {speakingData[level.id][topic.id].length} mục luyện tập
+                                {topic.count || 0} mục luyện tập
                               </p>
                             </div>
                             <span className="text-gray-400">→</span>

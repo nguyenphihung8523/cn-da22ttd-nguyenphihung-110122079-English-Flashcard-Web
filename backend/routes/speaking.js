@@ -11,9 +11,30 @@ const {
   getProgressChart,
   getLevelRecommendation,
   updatePracticeCount,
-  getDetailedStats
+  getDetailedStats,
+  getPublicSpeakingLevels,
+  getPublicSpeakingTopics,
+  getPublicSpeakingItems
 } = require('../controllers/speakingController');
 const SpeakingSession = require('../models/SpeakingSession');
+
+// ============ PUBLIC ROUTES (for user page) ============
+// @route   GET /api/speaking/levels
+// @desc    Lấy danh sách cấp độ luyện nói
+// @access  Public (authenticated)
+router.get('/levels', auth, getPublicSpeakingLevels);
+
+// @route   GET /api/speaking/topics/:levelId
+// @desc    Lấy danh sách chủ đề theo cấp độ
+// @access  Public (authenticated)
+router.get('/topics/:levelId', auth, getPublicSpeakingTopics);
+
+// @route   GET /api/speaking/items/:levelId/:topicId
+// @desc    Lấy danh sách mục luyện tập theo chủ đề
+// @access  Public (authenticated)
+router.get('/items/:levelId/:topicId', auth, getPublicSpeakingItems);
+
+// ============ SESSION ROUTES ============
 
 // @route   POST /api/speaking/start
 // @desc    Bắt đầu phiên luyện nói mới

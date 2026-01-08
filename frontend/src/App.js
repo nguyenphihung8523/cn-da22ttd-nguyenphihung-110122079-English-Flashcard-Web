@@ -18,6 +18,7 @@ import Stats from './pages/Stats';
 import Favorites from './pages/Favorites';
 import Mistakes from './pages/Mistakes';
 import Quiz from './pages/Quiz';
+import Feedback from './pages/Feedback';
 import AdminDashboard from './pages/AdminDashboard';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -93,6 +94,11 @@ function AppContent() {
           <Route path="/settings" element={
             <ProtectedRoute>
               <Settings />
+            </ProtectedRoute>
+          } />
+          <Route path="/feedback" element={
+            <ProtectedRoute>
+              <Feedback />
             </ProtectedRoute>
           } />
           <Route path="/stats" element={

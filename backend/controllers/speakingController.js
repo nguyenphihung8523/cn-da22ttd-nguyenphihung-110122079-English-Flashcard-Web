@@ -3,6 +3,9 @@ const PracticeResult = require('../models/PracticeResult');
 const UserProgress = require('../models/UserProgress');
 const LearningHistory = require('../models/LearningHistory');
 const User = require('../models/User');
+const SpeakingLevel = require('../models/SpeakingLevel');
+const SpeakingTopic = require('../models/SpeakingTopic');
+const SpeakingItem = require('../models/SpeakingItem');
 const mongoose = require('mongoose');
 
 // @desc    Bắt đầu phiên luyện nói mới
@@ -905,5 +908,57 @@ module.exports = {
   getProgressChart,
   getLevelRecommendation,
   updatePracticeCount,
-  getDetailedStats
+  getDetailedStats,
+  // Public APIs for user page
+  getPublicSpeakingLevels: async (req, res) => {
+    try {
+      const levels = await SpeakingLevel.find({ isActive: true }).sort({ order: 1 });
+      
+      // Fallback to default levels if no data in DB
+      if (levels.length === 0) {
+        return res.json({
+          success: true,
+          levels: [
+            { id: 'basic', name: 'Cơ bản', icon: '🌱', description: 'Từ vựng đơn giản' },
+            { id: 'conversation', name: 'Giao tiếp', icon: '💬', description: 'Hội thoại hàng ngày' },
+            { id: 'paragraph', name: 'Đoạn văn', icon: '📝', description: 'Đoạn văn mẫu' }
+          ]
+        });
+      }
+      
+      res.json({ success: true, levels });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  },
+  
+  getPublicSpeakingTopics: async (req, res) => {
+    try {
+      const { levelId } = req.params;
+      const topics = await SpeakingTopic.find({ levelId, isActive: true }).sort({ order: 1 });
+      
+      // Count items for each topic
+      const topicsWithCount = await Promise.all(topics.map(async (topic) => {
+        const count = await SpeakingItem.countDocuments({ level: levelId, topic: topic.id, isActive: true });
+        return {
+          ...topic.toObject(),
+          count
+        };
+      }));
+      
+      res.json({ success: true, topics: topicsWithCount });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  },
+  
+  getPublicSpeakingItems: async (req, res) => {
+    try {
+      const { levelId, topicId } = req.params;
+      const items = await SpeakingItem.find({ level: levelId, topic: topicId, isActive: true }).sort({ order: 1 });
+      res.json({ success: true, items });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
 };

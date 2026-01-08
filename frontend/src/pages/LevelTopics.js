@@ -11,6 +11,8 @@ export default function LevelTopics() {
   const specialization = searchParams.get('specialization') || 'it';
   const [completedTopics, setCompletedTopics] = useState([]);
   const [levelScore, setLevelScore] = useState(0);
+  const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const specializations = [
     { id: 'it', name: 'Công nghệ thông tin', icon: '💻' },
@@ -28,7 +30,8 @@ export default function LevelTopics() {
     specialized: { name: 'Tiếng Anh chuyên ngành', icon: '💼', color: 'red' }
   };
 
-  const topics = {
+  // Default topics (fallback)
+  const defaultTopics = {
     basic: [
       { id: 'colors', name: 'Màu sắc', icon: '🎨' },
       { id: 'numbers', name: 'Số đếm', icon: '🔢' },
@@ -61,8 +64,8 @@ export default function LevelTopics() {
     ]
   };
 
-  // Chủ đề cho mỗi chuyên ngành
-  const specializationTopics = {
+  // Chủ đề cho mỗi chuyên ngành (fallback)
+  const defaultSpecializationTopics = {
     it: [
       { id: 'specialized-it-software', name: 'Phần mềm', icon: '💻' },
       { id: 'specialized-it-hardware', name: 'Phần cứng', icon: '🖥️' },
@@ -96,10 +99,44 @@ export default function LevelTopics() {
   };
 
   useEffect(() => {
+    loadTopics();
     loadProgress();
-    // Lưu trạng thái trang LevelTopics khi người dùng vào trang này
     setPageState('learn', `/level-topics?level=${level}`);
   }, [level, specialization, setPageState]);
+
+  const loadTopics = async () => {
+    try {
+      setLoading(true);
+      
+      // Get topics from API (Topic collection)
+      const levelId = level === 'specialized' ? `specialized-${specialization}` : level;
+      const res = await API.get(`/flashcards/topics/${levelId}`);
+      
+      if (res.data.success && res.data.topics.length > 0) {
+        // Use topics from database
+        setTopics(res.data.topics);
+      } else {
+        // Fallback to default topics if no data in database
+        let baseTopics = [];
+        if (level === 'specialized') {
+          baseTopics = defaultSpecializationTopics[specialization] || [];
+        } else {
+          baseTopics = defaultTopics[level] || [];
+        }
+        setTopics(baseTopics);
+      }
+    } catch (err) {
+      console.error('Error loading topics:', err);
+      // Fallback to default topics on error
+      if (level === 'specialized') {
+        setTopics(defaultSpecializationTopics[specialization] || []);
+      } else {
+        setTopics(defaultTopics[level] || []);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadProgress = async () => {
     try {
@@ -108,7 +145,6 @@ export default function LevelTopics() {
         API.get(`/learning/progress/${level}`)
       ]);
       
-      // Nếu là cấp độ specialized, lấy điểm số riêng cho chuyên ngành
       if (level === 'specialized' && specialization) {
         setLevelScore(profileRes.data.specializationScores?.[specialization] || 0);
       } else {
@@ -122,11 +158,10 @@ export default function LevelTopics() {
   };
 
   const currentLevel = levelInfo[level];
-  const currentTopics = level === 'specialized' ? (specializationTopics[specialization] || []) : (topics[level] || []);
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4">
-      {/* Specialization Selector - chỉ hiển thị khi level là specialized */}
+      {/* Specialization Selector */}
       {level === 'specialized' && (
         <div className="mb-6 flex items-center gap-4">
           <label className="text-lg font-semibold text-gray-700">Chọn chuyên ngành:</label>
@@ -167,42 +202,60 @@ export default function LevelTopics() {
       </div>
 
       {/* Topics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {currentTopics.map(topic => {
-          const isCompleted = completedTopics.includes(topic.id);
-          
-          return (
-            <div
-              key={topic.id}
-              className={`bg-white rounded-xl shadow-lg p-6 flex items-center justify-between hover:shadow-2xl transition-all ${
-                isCompleted ? 'border-2 border-green-500' : ''
-              }`}
-            >
-              <div className="flex items-center gap-4 flex-1">
-                <div className="text-5xl">{topic.icon}</div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-2xl font-bold text-gray-800">{topic.name}</h3>
-                    {isCompleted && (
-                      <span className="text-2xl text-green-600">✓</span>
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải chủ đề...</p>
+        </div>
+      ) : topics.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-xl shadow-lg">
+          <div className="text-6xl mb-4">📭</div>
+          <p className="text-gray-600 text-lg">Chưa có chủ đề nào trong cấp độ này</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {topics.map(topic => {
+            const isCompleted = completedTopics.includes(topic.id);
+            
+            return (
+              <div
+                key={topic.id}
+                className={`bg-white rounded-xl shadow-lg p-6 flex items-center justify-between hover:shadow-2xl transition-all ${
+                  isCompleted ? 'border-2 border-green-500' : ''
+                }`}
+              >
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="text-5xl">
+                    {topic.icon?.startsWith('data:image') ? (
+                      <img src={topic.icon} alt={topic.name} className="w-12 h-12 object-contain" />
+                    ) : (
+                      topic.icon
                     )}
                   </div>
-                  {isCompleted && (
-                    <p className="text-sm text-green-600 font-semibold mt-1">Đã hoàn thành</p>
-                  )}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-2xl font-bold text-gray-800">{topic.name}</h3>
+                      {isCompleted && (
+                        <span className="text-2xl text-green-600">✓</span>
+                      )}
+                    </div>
+                    {isCompleted && (
+                      <p className="text-sm text-green-600 font-semibold mt-1">Đã hoàn thành</p>
+                    )}
+                  </div>
                 </div>
+                <Link
+                  to={`/learn-cards?level=${level}&topic=${topic.id}`}
+                  onClick={() => setPageState('learn', `/level-topics?level=${level}`)}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors"
+                >
+                  Học
+                </Link>
               </div>
-              <Link
-                to={`/learn-cards?level=${level}&topic=${topic.id}`}
-                onClick={() => setPageState('learn', `/level-topics?level=${level}`)}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors"
-              >
-                Học
-              </Link>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Review Section */}
       <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl shadow-xl p-8 text-white">

@@ -12,8 +12,10 @@ export default function Learn() {
   const [specializationScores, setSpecializationScores] = useState({});
   const [selectedSpecialization, setSelectedSpecialization] = useState(null);
   const [showSpecializationModal, setShowSpecializationModal] = useState(false);
+  const [levels, setLevels] = useState([]);
 
-  const levels = [
+  // Default levels (fallback)
+  const defaultLevels = [
     { id: 'basic', name: 'Cơ bản', icon: '📚', color: 'blue', description: 'Từ vựng cơ bản cho người mới bắt đầu' },
     { id: 'intermediate', name: 'Trung cấp', icon: '📖', color: 'green', description: 'Mở rộng vốn từ vựng hàng ngày' },
     { id: 'advanced', name: 'Nâng cao', icon: '🎓', color: 'purple', description: 'Từ vựng chuyên sâu và học thuật' },
@@ -22,8 +24,23 @@ export default function Learn() {
   ];
 
   useEffect(() => {
+    loadLevels();
     loadUserProgress();
-  }, [location]); // Reload khi location thay đổi (quay lại từ Quiz)
+  }, [location]);
+
+  const loadLevels = async () => {
+    try {
+      const res = await API.get('/flashcards/levels');
+      if (res.data.success && res.data.levels.length > 0) {
+        setLevels(res.data.levels);
+      } else {
+        setLevels(defaultLevels);
+      }
+    } catch (err) {
+      console.error('Error loading levels:', err);
+      setLevels(defaultLevels);
+    }
+  };
 
   const loadUserProgress = async () => {
     try {
@@ -114,7 +131,13 @@ export default function Learn() {
                 {/* Content */}
                 <div className={`p-6 bg-gradient-to-br from-${level.color}-50 to-${level.color}-100`}>
                   <div className="text-center mb-4">
-                    <div className="text-5xl mb-3">{level.icon}</div>
+                    <div className="text-5xl mb-3">
+                      {level.icon?.startsWith('data:image') ? (
+                        <img src={level.icon} alt={level.name} className="w-16 h-16 object-contain mx-auto" />
+                      ) : (
+                        level.icon
+                      )}
+                    </div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">{level.name}</h2>
                     <p className="text-sm text-gray-600">{level.description}</p>
                   </div>
@@ -195,7 +218,11 @@ export default function Learn() {
               return (
                 <div key={level.id} className="text-center">
                   <div className={`text-3xl mb-1 ${isUnlocked ? '' : 'grayscale opacity-50'}`}>
-                    {level.icon}
+                    {level.icon?.startsWith('data:image') ? (
+                      <img src={level.icon} alt={level.name} className="w-8 h-8 object-contain mx-auto" />
+                    ) : (
+                      level.icon
+                    )}
                   </div>
                   <p className="text-xs font-semibold text-gray-700">{level.name}</p>
                   {isUnlocked ? (
