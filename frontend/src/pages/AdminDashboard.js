@@ -487,7 +487,30 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="fixed top-0 left-64 right-0 h-16 bg-white shadow-md z-30 flex items-center justify-between px-6">
+        <div>
+          <h1 className="text-xl font-bold text-gray-800">
+            {activeTab === 'users' && '👥 Quản lý Người dùng'}
+            {activeTab === 'flashcards' && '📚 Quản lý Bài học'}
+            {activeTab === 'speaking' && '🎤 Quản lý Luyện nói'}
+            {activeTab === 'reports' && '📈 Báo cáo & Thống kê'}
+          </h1>
+        </div>
+        {adminInfo && (
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p className="text-sm font-semibold text-gray-800">{adminInfo.username}</p>
+              <p className="text-xs text-gray-500">{adminInfo.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}</p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+              <span className="text-xl">👨‍💼</span>
+            </div>
+          </div>
+        )}
+      </header>
+
       {/* Sidebar */}
       <aside className="w-64 min-h-screen bg-gradient-to-b from-blue-800 to-blue-900 text-white shadow-xl fixed left-0 top-0 flex flex-col">
         {/* Logo/Title */}
@@ -500,21 +523,6 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-
-        {/* Admin Info */}
-        {adminInfo && (
-          <div className="p-4 border-b border-blue-700">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                <span className="text-xl">👨‍💼</span>
-              </div>
-              <div>
-                <p className="text-sm font-semibold">{adminInfo.username}</p>
-                <p className="text-xs text-blue-300">{adminInfo.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}</p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Menu Navigation */}
         <div className="p-4 flex-1">
@@ -713,17 +721,7 @@ export default function AdminDashboard() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 p-6 bg-gray-100 min-h-screen">
-        {/* Page Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
-            {activeTab === 'users' && '👥 Quản lý Người dùng'}
-            {activeTab === 'flashcards' && '📚 Quản lý Bài học'}
-            {activeTab === 'speaking' && '🎤 Quản lý Luyện nói'}
-            {activeTab === 'reports' && '📈 Báo cáo & Thống kê'}
-          </h1>
-        </div>
-
+      <main className="ml-64 pt-16 p-6 bg-gray-100 min-h-screen">
         {/* Content */}
         {loading ? (
           <div className="text-center py-12">
