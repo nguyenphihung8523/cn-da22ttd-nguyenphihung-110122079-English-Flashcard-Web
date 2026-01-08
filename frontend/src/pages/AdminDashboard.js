@@ -35,44 +35,154 @@ export default function AdminDashboard() {
   const [speakingTopics, setSpeakingTopics] = useState([]);
   const [speakingItems, setSpeakingItems] = useState([]);
 
-  // Speaking levels and topics data
-  const speakingLevelsList = ['Cơ bản', 'Giao tiếp', 'Đoạn văn'];
+  // Speaking levels and topics data (matching user page)
+  const speakingLevelsList = [
+    { id: 'basic', name: 'Cơ bản', icon: '🌱' },
+    { id: 'conversation', name: 'Giao tiếp', icon: '💬' },
+    { id: 'paragraph', name: 'Đoạn văn', icon: '📝' }
+  ];
   const speakingTopicsData = {
-    'Cơ bản': [
-      { name: 'Động vật', count: 8 },
-      { name: 'Trái cây', count: 8 },
-      { name: 'Màu sắc', count: 8 },
-      { name: 'Số đếm', count: 8 }
+    'basic': [
+      { id: 'animals', name: 'Động vật', icon: '🐾', count: 8 },
+      { id: 'fruits', name: 'Trái cây', icon: '🍎', count: 8 },
+      { id: 'colors', name: 'Màu sắc', icon: '🎨', count: 8 },
+      { id: 'family', name: 'Gia đình', icon: '👨‍👩‍👧‍👦', count: 8 }
     ],
-    'Giao tiếp': [
-      { name: 'Chào hỏi', count: 10 },
-      { name: 'Mua sắm', count: 8 },
-      { name: 'Nhà hàng', count: 8 },
-      { name: 'Du lịch', count: 10 }
+    'conversation': [
+      { id: 'daily', name: 'Hàng ngày', icon: '☀️', count: 8 },
+      { id: 'shopping', name: 'Mua sắm', icon: '🛒', count: 8 },
+      { id: 'restaurant', name: 'Nhà hàng', icon: '🍽️', count: 8 },
+      { id: 'travel', name: 'Du lịch', icon: '✈️', count: 8 }
     ],
-    'Đoạn văn': [
-      { name: 'Kinh doanh', count: 6 },
-      { name: 'Công nghệ', count: 6 },
-      { name: 'Đời sống', count: 6 }
+    'paragraph': [
+      { id: 'phone', name: 'Điện thoại', icon: '📞', count: 8 },
+      { id: 'business', name: 'Kinh doanh', icon: '💼', count: 8 },
+      { id: 'technology', name: 'Công nghệ', icon: '💻', count: 8 }
     ]
+  };
+
+  // Speaking items data (matching user page)
+  const speakingItemsData = {
+    'basic': {
+      'animals': [
+        { id: 1, text: 'Cat', meaning: 'Con mèo' },
+        { id: 2, text: 'Dog', meaning: 'Con chó' },
+        { id: 3, text: 'Bird', meaning: 'Con chim' },
+        { id: 4, text: 'Fish', meaning: 'Con cá' },
+        { id: 5, text: 'Rabbit', meaning: 'Con thỏ' },
+        { id: 6, text: 'Horse', meaning: 'Con ngựa' },
+        { id: 7, text: 'Elephant', meaning: 'Con voi' },
+        { id: 8, text: 'Lion', meaning: 'Sư tử' }
+      ],
+      'fruits': [
+        { id: 1, text: 'Apple', meaning: 'Quả táo' },
+        { id: 2, text: 'Banana', meaning: 'Quả chuối' },
+        { id: 3, text: 'Orange', meaning: 'Quả cam' },
+        { id: 4, text: 'Strawberry', meaning: 'Quả dâu' },
+        { id: 5, text: 'Grape', meaning: 'Quả nho' },
+        { id: 6, text: 'Watermelon', meaning: 'Quả dưa hấu' },
+        { id: 7, text: 'Mango', meaning: 'Quả xoài' },
+        { id: 8, text: 'Pineapple', meaning: 'Quả dứa' }
+      ],
+      'colors': [
+        { id: 1, text: 'Red', meaning: 'Màu đỏ' },
+        { id: 2, text: 'Blue', meaning: 'Màu xanh dương' },
+        { id: 3, text: 'Green', meaning: 'Màu xanh lá' },
+        { id: 4, text: 'Yellow', meaning: 'Màu vàng' },
+        { id: 5, text: 'Black', meaning: 'Màu đen' },
+        { id: 6, text: 'White', meaning: 'Màu trắng' },
+        { id: 7, text: 'Purple', meaning: 'Màu tím' },
+        { id: 8, text: 'Pink', meaning: 'Màu hồng' }
+      ],
+      'family': [
+        { id: 1, text: 'Mother', meaning: 'Mẹ' },
+        { id: 2, text: 'Father', meaning: 'Bố' },
+        { id: 3, text: 'Sister', meaning: 'Chị/Em gái' },
+        { id: 4, text: 'Brother', meaning: 'Anh/Em trai' },
+        { id: 5, text: 'Grandmother', meaning: 'Bà' },
+        { id: 6, text: 'Grandfather', meaning: 'Ông' },
+        { id: 7, text: 'Aunt', meaning: 'Cô/Dì' },
+        { id: 8, text: 'Uncle', meaning: 'Chú/Bác' }
+      ]
+    },
+    'conversation': {
+      'daily': [
+        { id: 1, text: 'Good morning. How are you today?', meaning: 'Chào buổi sáng. Hôm nay bạn khỏe không?' },
+        { id: 2, text: 'What time is it?', meaning: 'Mấy giờ rồi?' },
+        { id: 3, text: 'Have a nice day!', meaning: 'Chúc bạn một ngày tốt lành!' },
+        { id: 4, text: 'See you later.', meaning: 'Hẹn gặp lại.' },
+        { id: 5, text: 'How was your weekend?', meaning: 'Cuối tuần của bạn thế nào?' },
+        { id: 6, text: 'What are you doing?', meaning: 'Bạn đang làm gì?' },
+        { id: 7, text: 'Nice to meet you.', meaning: 'Rất vui được gặp bạn.' },
+        { id: 8, text: 'Thank you very much.', meaning: 'Cảm ơn bạn rất nhiều.' }
+      ],
+      'shopping': [
+        { id: 1, text: 'How much is this?', meaning: 'Cái này giá bao nhiêu?' },
+        { id: 2, text: 'Do you have this in another size?', meaning: 'Bạn có size khác không?' },
+        { id: 3, text: 'Can I try this on?', meaning: 'Tôi có thể thử không?' },
+        { id: 4, text: 'Where is the fitting room?', meaning: 'Phòng thử đồ ở đâu?' },
+        { id: 5, text: 'I would like to pay.', meaning: 'Tôi muốn thanh toán.' },
+        { id: 6, text: 'Do you accept credit cards?', meaning: 'Bạn có chấp nhận thẻ tín dụng không?' },
+        { id: 7, text: 'Can I get a receipt?', meaning: 'Tôi có thể lấy hóa đơn không?' },
+        { id: 8, text: 'Thank you for your help.', meaning: 'Cảm ơn bạn đã giúp đỡ.' }
+      ],
+      'restaurant': [
+        { id: 1, text: 'A table for two, please.', meaning: 'Một bàn cho hai người.' },
+        { id: 2, text: 'What do you recommend?', meaning: 'Bạn khuyên gì?' },
+        { id: 3, text: 'I would like to order.', meaning: 'Tôi muốn gọi món.' },
+        { id: 4, text: 'Can I have the menu?', meaning: 'Tôi có thể lấy thực đơn không?' },
+        { id: 5, text: 'Is this spicy?', meaning: 'Cái này có cay không?' },
+        { id: 6, text: 'Can I have the bill?', meaning: 'Tôi có thể lấy hóa đơn không?' },
+        { id: 7, text: 'The food is delicious!', meaning: 'Món ăn ngon quá!' },
+        { id: 8, text: 'Thank you for the meal.', meaning: 'Cảm ơn bữa ăn ngon lành.' }
+      ],
+      'travel': [
+        { id: 1, text: 'Where is the train station?', meaning: 'Ga tàu ở đâu?' },
+        { id: 2, text: 'How do I get to the airport?', meaning: 'Làm thế nào để đến sân bay?' },
+        { id: 3, text: 'Can you help me with directions?', meaning: 'Bạn có thể giúp tôi chỉ đường không?' },
+        { id: 4, text: 'How much is a ticket?', meaning: 'Vé giá bao nhiêu?' },
+        { id: 5, text: 'What time does the bus leave?', meaning: 'Xe buýt khởi hành lúc mấy giờ?' },
+        { id: 6, text: 'Is this the right way?', meaning: 'Đây có phải là đường đúng không?' },
+        { id: 7, text: 'Can you recommend a hotel?', meaning: 'Bạn có thể giới thiệu khách sạn không?' },
+        { id: 8, text: 'Thank you for your help.', meaning: 'Cảm ơn bạn đã giúp đỡ.' }
+      ]
+    },
+    'paragraph': {
+      'phone': [
+        { id: 1, text: 'The telephone has revolutionized communication across the world.', meaning: 'Điện thoại đã cách mạng hóa giao tiếp trên toàn thế giới.' },
+        { id: 2, text: 'Mobile phones have become an essential part of modern life.', meaning: 'Điện thoại di động đã trở thành một phần thiết yếu của cuộc sống hiện đại.' },
+        { id: 3, text: 'Video calling technology has changed how families stay connected.', meaning: 'Công nghệ gọi video đã thay đổi cách các gia đình kết nối với nhau.' },
+        { id: 4, text: 'The history of telecommunications spans over a century.', meaning: 'Lịch sử viễn thông kéo dài hơn một thế kỷ.' }
+      ],
+      'business': [
+        { id: 1, text: 'Business communication is the foundation of successful organizations.', meaning: 'Giao tiếp kinh doanh là nền tảng của các tổ chức thành công.' },
+        { id: 2, text: 'Corporate meetings are essential for decision making and strategic planning.', meaning: 'Các cuộc họp công ty là thiết yếu để ra quyết định và lập kế hoạch chiến lược.' },
+        { id: 3, text: 'Professional presentations require careful preparation and clear communication.', meaning: 'Các bài thuyết trình chuyên nghiệp đòi hỏi chuẩn bị cẩn thận và giao tiếp rõ ràng.' },
+        { id: 4, text: 'Leadership in business requires strong communication skills.', meaning: 'Lãnh đạo trong kinh doanh đòi hỏi kỹ năng giao tiếp mạnh mẽ.' }
+      ],
+      'technology': [
+        { id: 1, text: 'Artificial intelligence is transforming industries and changing how we work.', meaning: 'Trí tuệ nhân tạo đang chuyển đổi các ngành công nghiệp và thay đổi cách chúng ta làm việc.' },
+        { id: 2, text: 'Cloud computing has revolutionized data storage and accessibility.', meaning: 'Điện toán đám mây đã cách mạng hóa lưu trữ và khả năng truy cập dữ liệu.' },
+        { id: 3, text: 'Cybersecurity is increasingly important as digital threats continue to evolve.', meaning: 'An ninh mạng ngày càng trở nên quan trọng khi các mối đe dọa kỹ thuật số tiếp tục phát triển.' },
+        { id: 4, text: 'The Internet of Things connects billions of devices worldwide.', meaning: 'Internet of Things kết nối hàng tỷ thiết bị trên toàn thế giới.' }
+      ]
+    }
   };
 
   const handleSelectSpeakingLevel = (level) => {
     setSelectedSpeakingLevel(level);
     setSelectedSpeakingTopic(null);
-    setSpeakingTopics(speakingTopicsData[level] || []);
+    setSpeakingTopics(speakingTopicsData[level.id] || []);
     setSpeakingItems([]);
   };
 
   const handleSelectSpeakingTopic = (topic) => {
     setSelectedSpeakingTopic(topic);
-    // Sample speaking items for the topic
-    setSpeakingItems([
-      { _id: '1', text: 'Hello', meaning: 'Xin chào', pronunciation: 'həˈloʊ' },
-      { _id: '2', text: 'Good morning', meaning: 'Chào buổi sáng', pronunciation: 'ɡʊd ˈmɔːrnɪŋ' },
-      { _id: '3', text: 'How are you?', meaning: 'Bạn khỏe không?', pronunciation: 'haʊ ɑːr juː' },
-      { _id: '4', text: 'Nice to meet you', meaning: 'Rất vui được gặp bạn', pronunciation: 'naɪs tuː miːt juː' }
-    ]);
+    // Load speaking items from data
+    const levelId = selectedSpeakingLevel.id;
+    const topicId = topic.id;
+    const items = speakingItemsData[levelId]?.[topicId] || [];
+    setSpeakingItems(items);
   };
 
   const handleBackToSpeakingLevels = () => {
@@ -902,7 +1012,7 @@ export default function AdminDashboard() {
                           onClick={handleBackToSpeakingTopics}
                           className={`${selectedSpeakingLevel && !selectedSpeakingTopic ? 'text-purple-600 font-semibold' : 'text-gray-600 hover:text-purple-600'}`}
                         >
-                          {selectedSpeakingLevel}
+                          {selectedSpeakingLevel.name}
                         </button>
                       </>
                     )}
@@ -930,7 +1040,10 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
                       {speakingLevelsList.map((level, idx) => (
                         <div key={idx} className="border-2 border-purple-300 rounded-lg p-4 hover:shadow-lg transition">
-                          <h3 className="font-bold text-gray-800 mb-3">{level}</h3>
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-2xl">{level.icon}</span>
+                            <h3 className="font-bold text-gray-800">{level.name}</h3>
+                          </div>
                           <div className="flex gap-2">
                             <button 
                               onClick={() => handleSelectSpeakingLevel(level)}
@@ -951,7 +1064,7 @@ export default function AdminDashboard() {
                   <div className="bg-white rounded-lg shadow overflow-hidden">
                     <div className="p-6 border-b flex justify-between items-center">
                       <div>
-                        <h2 className="text-2xl font-bold text-gray-800">🏷️ Chủ đề - {selectedSpeakingLevel}</h2>
+                        <h2 className="text-2xl font-bold text-gray-800">🏷️ Chủ đề - {selectedSpeakingLevel.name}</h2>
                         <p className="text-gray-600 mt-1">Nhấn "Sửa" để xem các mục luyện tập</p>
                       </div>
                       <div className="flex gap-2">
@@ -978,7 +1091,9 @@ export default function AdminDashboard() {
                         <tbody>
                           {speakingTopics.map((topic, idx) => (
                             <tr key={idx} className="border-b hover:bg-gray-50">
-                              <td className="px-6 py-4 text-sm text-gray-800 font-medium">{topic.name}</td>
+                              <td className="px-6 py-4 text-sm text-gray-800 font-medium">
+                                <span className="mr-2">{topic.icon}</span>{topic.name}
+                              </td>
                               <td className="px-6 py-4 text-sm">
                                 <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-semibold">
                                   {topic.count}
@@ -1007,7 +1122,7 @@ export default function AdminDashboard() {
                     <div className="p-6 border-b flex justify-between items-center">
                       <div>
                         <h2 className="text-2xl font-bold text-gray-800">🎯 Mục luyện tập - {selectedSpeakingTopic.name}</h2>
-                        <p className="text-gray-600 mt-1">Cấp độ: {selectedSpeakingLevel} • Nhấn vào thẻ để lật</p>
+                        <p className="text-gray-600 mt-1">Cấp độ: {selectedSpeakingLevel.name}</p>
                       </div>
                       <div className="flex gap-2">
                         <button className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 font-semibold">
@@ -1022,79 +1137,32 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     
-                    {/* Speaking Items Grid */}
+                    {/* Speaking Items List */}
                     <div className="p-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {speakingItems.map((item) => (
-                          <div key={item._id} className="flex flex-col">
-                            <div 
-                              className="relative cursor-pointer"
-                              style={{ perspective: '1000px', height: '280px' }}
-                              onClick={() => toggleFlipCard(`speaking-${item._id}`)}
-                            >
-                              <div 
-                                className="relative w-full h-full transition-transform duration-700"
-                                style={{ 
-                                  transformStyle: 'preserve-3d',
-                                  transform: flippedCards[`speaking-${item._id}`] ? 'rotateY(180deg)' : 'rotateY(0deg)'
-                                }}
-                              >
-                                {/* Front */}
-                                <div 
-                                  className="absolute w-full h-full bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-purple-300"
-                                  style={{ backfaceVisibility: 'hidden' }}
-                                >
-                                  <div className="relative h-full flex flex-col justify-between p-4">
-                                    <div className="flex justify-between items-start">
-                                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">
-                                        {speakingItems.indexOf(item) + 1}
-                                      </div>
-                                      <span className="text-gray-400 text-xs">Nhấn để lật</span>
-                                    </div>
-                                    <div className="flex-1 flex flex-col justify-center items-center">
-                                      <span className="text-4xl mb-3">🎤</span>
-                                      <h2 className="text-2xl font-bold text-purple-600 mb-2 text-center">{item.text}</h2>
-                                      {item.pronunciation && (
-                                        <p className="text-sm text-gray-500">/{item.pronunciation}/</p>
-                                      )}
-                                    </div>
-                                    <div className="text-center">
-                                      <p className="text-xs text-gray-400">Click để xem nghĩa</p>
-                                    </div>
-                                  </div>
+                      <div className="space-y-4">
+                        {speakingItems.map((item, index) => (
+                          <div 
+                            key={item.id} 
+                            className="border-2 border-purple-200 rounded-lg p-4 bg-purple-50 hover:border-purple-400 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold">
+                                  {index + 1}
                                 </div>
-
-                                {/* Back */}
-                                <div 
-                                  className="absolute w-full h-full bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-green-300"
-                                  style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-                                >
-                                  <div className="relative h-full flex flex-col justify-between p-4">
-                                    <div className="flex justify-between items-start">
-                                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-sm">
-                                        {speakingItems.indexOf(item) + 1}
-                                      </div>
-                                      <span className="text-gray-400 text-xs">Nhấn để lật</span>
-                                    </div>
-                                    <div className="flex-1 flex flex-col justify-center items-center px-2">
-                                      <p className="text-xl font-bold text-gray-800 text-center">{item.meaning}</p>
-                                    </div>
-                                    <div className="text-center">
-                                      <p className="text-xs text-gray-400">Click để xem từ vựng</p>
-                                    </div>
-                                  </div>
+                                <div>
+                                  <p className="text-lg font-semibold text-gray-800">{item.text}</p>
+                                  <p className="text-sm text-purple-600 mt-1">{item.meaning}</p>
                                 </div>
                               </div>
-                            </div>
-                            
-                            {/* Action buttons */}
-                            <div className="flex gap-2 mt-3 justify-center">
-                              <button className="px-3 py-1.5 bg-purple-500 text-white rounded-lg text-sm hover:bg-purple-600 font-medium">
-                                ✏️ Sửa
-                              </button>
-                              <button className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 font-medium">
-                                🗑️ Xóa
-                              </button>
+                              <div className="flex gap-2">
+                                <button className="px-3 py-1.5 bg-purple-500 text-white rounded-lg text-sm hover:bg-purple-600 font-medium">
+                                  ✏️ Sửa
+                                </button>
+                                <button className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 font-medium">
+                                  🗑️ Xóa
+                                </button>
+                              </div>
                             </div>
                           </div>
                         ))}
