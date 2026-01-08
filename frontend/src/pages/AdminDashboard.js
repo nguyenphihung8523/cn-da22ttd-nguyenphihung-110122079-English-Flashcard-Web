@@ -487,68 +487,106 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Admin Header */}
-      <header className="bg-gradient-to-r from-blue-800 to-blue-900 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-gray-100 flex">
+      {/* Sidebar */}
+      <aside className="w-64 min-h-screen bg-gradient-to-b from-blue-800 to-blue-900 text-white shadow-xl fixed left-0 top-0 flex flex-col">
+        {/* Logo/Title */}
+        <div className="p-4 border-b border-blue-700">
           <div className="flex items-center gap-3">
             <span className="text-3xl">⚙️</span>
             <div>
-              <h1 className="text-xl font-bold">Admin Panel</h1>
-              <p className="text-blue-200 text-sm">English Flashcard Web</p>
+              <h1 className="text-lg font-bold">Admin Panel</h1>
+              <p className="text-blue-300 text-xs">English Flashcard Web</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            {adminInfo && (
-              <div className="relative">
-                <button
-                  onClick={() => setShowAdminDropdown(!showAdminDropdown)}
-                  className="flex items-center gap-2 px-3 py-2 bg-blue-700 hover:bg-blue-600 rounded-lg transition-colors"
-                >
-                  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                    <span className="text-lg">👨‍💼</span>
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-semibold">{adminInfo.username}</p>
-                    <p className="text-xs text-blue-200">{adminInfo.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}</p>
-                  </div>
-                  <span className="text-blue-200">{showAdminDropdown ? '▲' : '▼'}</span>
-                </button>
-                
-                {/* Dropdown Menu */}
-                {showAdminDropdown && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl z-50 overflow-hidden">
-                    <button
-                      onClick={openAdminProfilePage}
-                      className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 flex items-center gap-3 border-b"
-                    >
-                      <span className="text-lg">👤</span>
-                      <span className="font-medium">Thông tin quản trị viên</span>
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 flex items-center gap-3"
-                    >
-                      <span className="text-lg">🚪</span>
-                      <span className="font-medium">Đăng xuất</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
         </div>
-      </header>
 
-      {/* Click outside to close dropdown */}
-      {showAdminDropdown && (
-        <div 
-          className="fixed inset-0 z-40" 
-          onClick={() => setShowAdminDropdown(false)}
-        />
-      )}
+        {/* Admin Info */}
+        {adminInfo && (
+          <div className="p-4 border-b border-blue-700">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                <span className="text-xl">👨‍💼</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold">{adminInfo.username}</p>
+                <p className="text-xs text-blue-300">{adminInfo.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Admin Profile Page */}
+        {/* Menu Navigation */}
+        <div className="p-4 flex-1">
+          <p className="text-xs text-blue-300 uppercase font-semibold mb-3">Menu quản lý</p>
+          <nav className="space-y-2">
+            <button
+              onClick={() => handleTabChange('users')}
+              className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
+                activeTab === 'users'
+                  ? 'bg-white text-blue-800 shadow-lg'
+                  : 'bg-blue-700 hover:bg-blue-600 text-white'
+              }`}
+            >
+              <span className="text-xl">👥</span>
+              <span>Người dùng</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('flashcards')}
+              className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
+                activeTab === 'flashcards'
+                  ? 'bg-white text-blue-800 shadow-lg'
+                  : 'bg-blue-700 hover:bg-blue-600 text-white'
+              }`}
+            >
+              <span className="text-xl">📚</span>
+              <span>Bài học</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('speaking')}
+              className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
+                activeTab === 'speaking'
+                  ? 'bg-white text-blue-800 shadow-lg'
+                  : 'bg-blue-700 hover:bg-blue-600 text-white'
+              }`}
+            >
+              <span className="text-xl">🎤</span>
+              <span>Luyện nói</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('reports')}
+              className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
+                activeTab === 'reports'
+                  ? 'bg-white text-blue-800 shadow-lg'
+                  : 'bg-blue-700 hover:bg-blue-600 text-white'
+              }`}
+            >
+              <span className="text-xl">📈</span>
+              <span>Báo cáo</span>
+            </button>
+          </nav>
+        </div>
+
+        {/* Bottom Actions */}
+        <div className="p-4 border-t border-blue-700 space-y-2">
+          <button
+            onClick={openAdminProfilePage}
+            className="w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 bg-blue-700 hover:bg-blue-600 text-white"
+          >
+            <span className="text-xl">👤</span>
+            <span>Thông tin tài khoản</span>
+          </button>
+          <button
+            onClick={handleLogout}
+            className="w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 bg-red-600 hover:bg-red-500 text-white"
+          >
+            <span className="text-xl">🚪</span>
+            <span>Đăng xuất</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Admin Profile Page Modal */}
       {showAdminProfilePage && adminInfo && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -674,104 +712,50 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      <div className="flex">
-        {/* Sidebar Menu */}
-        <aside className="w-64 min-h-screen bg-gradient-to-b from-blue-800 to-blue-900 text-white shadow-xl">
-          <div className="p-4">
-            <h2 className="text-lg font-bold text-blue-200 mb-4">📋 Menu quản lý</h2>
-            <nav className="space-y-2">
-              <button
-                onClick={() => handleTabChange('users')}
-                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
-                  activeTab === 'users'
-                    ? 'bg-white text-blue-800 shadow-lg'
-                    : 'bg-blue-700 hover:bg-blue-600 text-white'
-                }`}
-              >
-                <span className="text-xl">👥</span>
-                <span>Người dùng</span>
-              </button>
-              <button
-                onClick={() => handleTabChange('flashcards')}
-                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
-                  activeTab === 'flashcards'
-                    ? 'bg-white text-blue-800 shadow-lg'
-                    : 'bg-blue-700 hover:bg-blue-600 text-white'
-                }`}
-              >
-                <span className="text-xl">📚</span>
-                <span>Bài học</span>
-              </button>
-              <button
-                onClick={() => handleTabChange('speaking')}
-                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
-                  activeTab === 'speaking'
-                    ? 'bg-white text-blue-800 shadow-lg'
-                    : 'bg-blue-700 hover:bg-blue-600 text-white'
-                }`}
-              >
-                <span className="text-xl">🎤</span>
-                <span>Luyện nói</span>
-              </button>
-              <button
-                onClick={() => handleTabChange('reports')}
-                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-left flex items-center gap-3 ${
-                  activeTab === 'reports'
-                    ? 'bg-white text-blue-800 shadow-lg'
-                    : 'bg-blue-700 hover:bg-blue-600 text-white'
-                }`}
-              >
-                <span className="text-xl">📈</span>
-                <span>Báo cáo</span>
-              </button>
-            </nav>
-          </div>
-        </aside>
+      {/* Main Content */}
+      <main className="flex-1 ml-64 p-6 bg-gray-100 min-h-screen">
+        {/* Page Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">
+            {activeTab === 'users' && '👥 Quản lý Người dùng'}
+            {activeTab === 'flashcards' && '📚 Quản lý Bài học'}
+            {activeTab === 'speaking' && '🎤 Quản lý Luyện nói'}
+            {activeTab === 'reports' && '📈 Báo cáo & Thống kê'}
+          </h1>
+        </div>
 
-        {/* Main Content */}
-        <main className="flex-1 p-6 bg-gray-100 min-h-screen">
-          {/* Page Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-800">
-              {activeTab === 'users' && '👥 Quản lý Người dùng'}
-              {activeTab === 'flashcards' && '📚 Quản lý Bài học'}
-              {activeTab === 'speaking' && '🎤 Quản lý Luyện nói'}
-              {activeTab === 'reports' && '📈 Báo cáo & Thống kê'}
-            </h1>
+        {/* Content */}
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Đang tải dữ liệu...</p>
           </div>
-
-          {/* Content */}
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Đang tải dữ liệu...</p>
-            </div>
-          ) : (
-            <>
-              {/* Users Tab */}
-              {activeTab === 'users' && (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                  <div className="p-6 border-b flex justify-between items-center">
-                    <h2 className="text-2xl font-bold text-gray-800">Quản lý người dùng</h2>
-                    <button
-                      onClick={() => setShowUserModal(true)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
-                    >
-                      ➕ Thêm người dùng
-                    </button>
+        ) : (
+          <>
+            {/* Users Tab */}
+            {activeTab === 'users' && (
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="p-6 border-b flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-800">Quản lý người dùng</h2>
+                  <button
+                    onClick={() => setShowUserModal(true)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
+                  >
+                    ➕ Thêm người dùng
+                  </button>
+                </div>
+                {users.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <p className="text-gray-600">Không có người dùng nào</p>
                   </div>
-                  {users.length === 0 ? (
-                    <div className="p-6 text-center">
-                      <p className="text-gray-600">Không có người dùng nào</p>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead className="bg-gray-50 border-b">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tên</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tài khoản</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Quyền</th>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tên</th>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tài khoản</th>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Quyền</th>
                           <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Trạng thái</th>
                           <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Hành động</th>
                         </tr>
@@ -785,31 +769,31 @@ export default function AdminDashboard() {
                               <select
                                 value={user.role}
                                 onChange={(e) => changeUserRole(user._id, e.target.value)}
-                                    className="px-2 py-1 border rounded text-sm"
-                                  >
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
-                                  </select>
-                                </td>
-                                <td className="px-6 py-4 text-sm">
-                                  <button
-                                    onClick={() => toggleUserStatus(user._id)}
-                                    className={`px-3 py-1 rounded text-white font-semibold text-sm ${
-                                      user.isActive ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
-                                    }`}
-                                  >
-                                    {user.isActive ? '✓ Hoạt động' : '✗ Khóa'}
-                                  </button>
-                                </td>
-                                <td className="px-6 py-4 text-sm space-x-2">
-                                  <button
-                                    onClick={() => deleteUser(user._id)}
-                                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-semibold text-sm"
-                                  >
-                                    🗑️ Xóa
-                                  </button>
-                                </td>
-                              </tr>
+                                className="px-2 py-1 border rounded text-sm"
+                              >
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                              </select>
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <button
+                                onClick={() => toggleUserStatus(user._id)}
+                                className={`px-3 py-1 rounded text-white font-semibold text-sm ${
+                                  user.isActive ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
+                                }`}
+                              >
+                                {user.isActive ? '✓ Hoạt động' : '✗ Khóa'}
+                              </button>
+                            </td>
+                            <td className="px-6 py-4 text-sm space-x-2">
+                              <button
+                                onClick={() => deleteUser(user._id)}
+                                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-semibold text-sm"
+                              >
+                                🗑️ Xóa
+                              </button>
+                            </td>
+                          </tr>
                             ))}
                           </tbody>
                         </table>
@@ -1335,10 +1319,9 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
-            </>
-          )}
-        </main>
-      </div>
+          </>
+        )}
+      </main>
     </div>
   );
 }
