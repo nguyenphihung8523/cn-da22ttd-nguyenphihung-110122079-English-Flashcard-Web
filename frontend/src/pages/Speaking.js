@@ -1074,7 +1074,7 @@ export default function Speaking() {
       </div>
 
       {/* Mistakes Modal - Luyện lại những từ sai */}
-      {showMistakesModal && mistakeItems.length > 0 && (
+      {showMistakesModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
             <div className="p-6">
@@ -1088,7 +1088,19 @@ export default function Speaking() {
                 </button>
               </div>
 
-              {mistakeItems.length > 0 ? (
+              {mistakeItems.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-6xl mb-4">🎉</div>
+                  <p className="text-gray-600 text-lg mb-2">Tuyệt vời! Không có từ nào cần luyện lại</p>
+                  <p className="text-gray-500 text-sm">Hãy tiếp tục luyện tập để cải thiện kỹ năng phát âm</p>
+                  <button
+                    onClick={() => setShowMistakesModal(false)}
+                    className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                  >
+                    Đóng
+                  </button>
+                </div>
+              ) : (
                 <div className="space-y-4">
                   {/* Current Mistake Item */}
                   <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-6 text-center">
@@ -1252,10 +1264,6 @@ export default function Speaking() {
                       Đóng
                     </button>
                   )}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-gray-600">Không có từ nào cần luyện lại</p>
                 </div>
               )}
             </div>
