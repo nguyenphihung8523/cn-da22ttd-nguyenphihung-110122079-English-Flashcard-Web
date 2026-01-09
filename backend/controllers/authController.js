@@ -11,10 +11,6 @@ const register = async (req, res) => {
     const existEmail = await User.findOne({ email });
     if(existEmail) return res.status(400).json({message: 'Email đã được sử dụng'});
 
-    // Kiểm tra username đã tồn tại
-    const existUsername = await User.findOne({ username });
-    if(existUsername) return res.status(400).json({message: 'Tên người dùng đã được sử dụng'});
-
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
@@ -26,12 +22,7 @@ const register = async (req, res) => {
     console.error('Register error:', err);
     // Xử lý lỗi duplicate key từ MongoDB
     if (err.code === 11000) {
-      const field = Object.keys(err.keyPattern)[0];
-      if (field === 'email') {
-        return res.status(400).json({message: 'Email đã được sử dụng'});
-      } else if (field === 'username') {
-        return res.status(400).json({message: 'Tên người dùng đã được sử dụng'});
-      }
+      return res.status(400).json({message: 'Email đã được sử dụng'});
     }
     res.status(500).json({message: 'Lỗi server: ' + err.message});
   }
