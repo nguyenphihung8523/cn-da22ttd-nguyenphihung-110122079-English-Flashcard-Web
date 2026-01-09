@@ -34,9 +34,12 @@ export default function Login(){
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       alert('Đăng nhập thành công');
-      // Chuyển hướng dựa trên role
+      // Chuyển hướng dựa trên role và trạng thái assessment
       if (user?.role === 'admin') {
         navigate('/admin');
+      } else if (!user?.hasCompletedAssessment) {
+        // User mới chưa làm bài đánh giá
+        navigate('/assessment');
       } else {
         navigate('/dashboard');
       }

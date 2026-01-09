@@ -20,6 +20,7 @@ import Mistakes from './pages/Mistakes';
 import Quiz from './pages/Quiz';
 import Feedback from './pages/Feedback';
 import AdminDashboard from './pages/AdminDashboard';
+import AssessmentTest from './pages/AssessmentTest';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -32,14 +33,20 @@ function AppContent() {
   const isAdmin = user?.role === 'admin';
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
   const isAdminPage = location.pathname === '/admin';
+  const isAssessmentPage = location.pathname === '/assessment';
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {!isAuthPage && !isAdminPage && <Header />}
+      {!isAuthPage && !isAdminPage && !isAssessmentPage && <Header />}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={
             token ? (isAdmin ? <Navigate to="/admin" replace /> : <Navigate to="/dashboard" replace />) : <Home />
+          } />
+          <Route path="/assessment" element={
+            <ProtectedRoute>
+              <AssessmentTest />
+            </ProtectedRoute>
           } />
           <Route path="/dashboard" element={
             <ProtectedRoute>

@@ -49,6 +49,12 @@ const userSchema = new mongoose.Schema({
     showImages: { type: Boolean, default: true }
   },
   selectedSpecialization: { type: String, default: null },
+  hasCompletedAssessment: { type: Boolean, default: false },
+  assessmentResult: {
+    level: { type: String, default: null },
+    score: { type: Number, default: 0 },
+    completedAt: { type: Date, default: null }
+  },
   feedbacks: [{
     type: { type: String, enum: ['suggestion', 'bug', 'question', 'other'], default: 'suggestion' },
     subject: { type: String, required: true },

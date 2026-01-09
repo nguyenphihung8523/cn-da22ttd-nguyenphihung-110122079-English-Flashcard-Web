@@ -222,6 +222,83 @@ const sendFeedback = async (req, res) => {
   }
 };
 
+// Lưu kết quả đánh giá trình độ
+const saveAssessmentResult = async (req, res) => {
+  try {
+    const { score, answers } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    // Xác định cấp độ dựa trên điểm số
+    let determinedLevel = 'basic';
+    let unlockedLevels = ['basic'];
+    
+    if (score >= 80) {
+      determinedLevel = 'advanced';
+      unlockedLevels = ['basic', 'intermediate', 'advanced'];
+    } else if (score >= 60) {
+      determinedLevel = 'intermediate';
+      unlockedLevels = ['basic', 'intermediate'];
+    }
+
+    // Cập nhật user
+    user.hasCompletedAssessment = true;
+    user.assessmentResult = {
+      level: determinedLevel,
+      score: score,
+      completedAt: new Date()
+    };
+    user.unlockedLevels = unlockedLevels;
+    
+    await user.save();
+
+    res.json({ 
+      success: true,
+      message: 'Đã lưu kết quả đánh giá',
+      result: {
+        level: determinedLevel,
+        score: score,
+        unlockedLevels: unlockedLevels
+      }
+    });
+  } catch (err) {
+    console.error('Lỗi lưu kết quả đánh giá:', err);
+    res.status(500).json({ message: 'Lỗi lưu kết quả đánh giá' });
+  }
+};
+
+// Bỏ qua đánh giá (bắt đầu từ cơ bản)
+const skipAssessment = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    user.hasCompletedAssessment = true;
+    user.assessmentResult = {
+      level: 'basic',
+      score: 0,
+      completedAt: new Date()
+    };
+    user.unlockedLevels = ['basic'];
+    
+    await user.save();
+
+    res.json({ 
+      success: true,
+      message: 'Đã bỏ qua đánh giá, bắt đầu từ cấp độ cơ bản'
+    });
+  } catch (err) {
+    console.error('Lỗi bỏ qua đánh giá:', err);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
@@ -234,5 +311,7 @@ module.exports = {
   addCustomFlashcard,
   getCustomFlashcards,
   deleteCustomFlashcard,
-  sendFeedback
+  sendFeedback,
+  saveAssessmentResult,
+  skipAssessment
 };

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getProfile, updateProfile, updateSettings, changePassword, logoutAll, addFavorite, removeFavorite, getFavorites, addCustomFlashcard, getCustomFlashcards, deleteCustomFlashcard, sendFeedback } = require('../controllers/userController');
+const { getProfile, updateProfile, updateSettings, changePassword, logoutAll, addFavorite, removeFavorite, getFavorites, addCustomFlashcard, getCustomFlashcards, deleteCustomFlashcard, sendFeedback, saveAssessmentResult, skipAssessment } = require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.get('/profile', authMiddleware, getProfile);
@@ -19,5 +19,9 @@ router.delete('/custom-flashcards/:id', authMiddleware, deleteCustomFlashcard);
 
 // Feedback route
 router.post('/feedback', authMiddleware, sendFeedback);
+
+// Assessment routes
+router.post('/assessment/save', authMiddleware, saveAssessmentResult);
+router.post('/assessment/skip', authMiddleware, skipAssessment);
 
 module.exports = router;
