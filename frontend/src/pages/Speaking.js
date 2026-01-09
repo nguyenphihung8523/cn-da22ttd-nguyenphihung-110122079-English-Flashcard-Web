@@ -314,10 +314,29 @@ export default function Speaking() {
   };
 
   const saveSpeakingResult = async (item, spokenText, accuracy, pronunciationScore) => {
+    // Cập nhật local stats trước
+    setSessionStats(prev => {
+      const newCompletedItems = prev.completedItems + 1;
+      const newTotalAccuracy = (prev.averageAccuracy * prev.completedItems + accuracy) / newCompletedItems;
+      const newTotalPronunciation = (prev.pronunciationScore * prev.completedItems + pronunciationScore) / newCompletedItems;
+      
+      return {
+        ...prev,
+        completedItems: newCompletedItems,
+        averageAccuracy: Math.round(newTotalAccuracy),
+        pronunciationScore: Math.round(newTotalPronunciation)
+      };
+    });
+
+    // Nếu là local session, không gọi API
+    if (currentSession && currentSession.toString().startsWith('local-')) {
+      return;
+    }
+
     try {
       const response = await API.post('/speaking/save-result', {
         sessionId: currentSession,
-        itemId: item.id,
+        itemId: item.id || item._id,
         text: item.text,
         meaning: item.meaning,
         spokenText,
@@ -325,11 +344,13 @@ export default function Speaking() {
         pronunciationScore
       });
       
+      // Cập nhật từ server nếu có
       if (response.data.session) {
         setSessionStats(response.data.session);
       }
     } catch (error) {
       console.error('Lỗi lưu kết quả:', error);
+      // Giữ local stats đã cập nhật ở trên
     }
   };
 
