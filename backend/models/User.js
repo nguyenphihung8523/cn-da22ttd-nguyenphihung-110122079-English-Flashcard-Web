@@ -26,9 +26,9 @@ const userSchema = new mongoose.Schema({
     lastStudyDate: { type: Date }
   },
   levelScores: {
-    basic: { type: Number, default: 100 },
-    intermediate: { type: Number, default: 100 },
-    advanced: { type: Number, default: 100 },
+    basic: { type: Number, default: 0 },
+    intermediate: { type: Number, default: 0 },
+    advanced: { type: Number, default: 0 },
     communication: { type: Number, default: 0 },
     specialized: { type: Number, default: 0 }
   },
@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
   },
   unlockedLevels: {
     type: [String],
-    default: ['basic', 'intermediate', 'advanced', 'communication', 'specialized']
+    default: ['basic']
   },
   settings: {
     voiceGender: { type: String, enum: ['male', 'female'], default: 'female' },
