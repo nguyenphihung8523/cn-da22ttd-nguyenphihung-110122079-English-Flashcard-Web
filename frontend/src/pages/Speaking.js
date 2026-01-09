@@ -135,12 +135,12 @@ export default function Speaking() {
     setCurrentItemIndex(0);
     resetSession();
     
-    // Start session automatically
-    await startSpeakingSession(selectedLevel, topic);
+    // Start session automatically - pass items.length directly
+    await startSpeakingSession(selectedLevel, topic, items.length);
   };
 
   // Session management functions
-  const startSpeakingSession = async (level, topic) => {
+  const startSpeakingSession = async (level, topic, itemCount) => {
     try {
       const response = await API.post('/speaking/start', {
         level,
@@ -151,12 +151,20 @@ export default function Speaking() {
       setCurrentSession(response.data.sessionId);
       setSessionStats({
         completedItems: 0,
-        totalItems: speakingItems.length,
+        totalItems: itemCount || 0,
         averageAccuracy: 0,
         pronunciationScore: 0
       });
     } catch (error) {
       console.error('Lỗi bắt đầu phiên luyện nói:', error);
+      // Vẫn tạo session local nếu API lỗi
+      setCurrentSession('local-' + Date.now());
+      setSessionStats({
+        completedItems: 0,
+        totalItems: itemCount || 0,
+        averageAccuracy: 0,
+        pronunciationScore: 0
+      });
     }
   };
 
@@ -1017,13 +1025,13 @@ export default function Speaking() {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm text-gray-600">Tiến độ phiên:</span>
                       <span className="text-sm font-medium">
-                        {Math.round((sessionStats.completedItems / sessionStats.totalItems) * 100)}%
+                        {sessionStats.totalItems > 0 ? Math.round((sessionStats.completedItems / sessionStats.totalItems) * 100) : 0}%
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
                       <div
                         className="bg-blue-500 h-3 rounded-full transition-all"
-                        style={{ width: `${(sessionStats.completedItems / sessionStats.totalItems) * 100}%` }}
+                        style={{ width: `${sessionStats.totalItems > 0 ? (sessionStats.completedItems / sessionStats.totalItems) * 100 : 0}%` }}
                       />
                     </div>
                   </div>
