@@ -27,7 +27,15 @@ export default function Header(){
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    // Xóa tất cả dữ liệu user trong localStorage
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key !== 'theme') { // Giữ lại theme nếu có
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
     navigate('/');
   };
 

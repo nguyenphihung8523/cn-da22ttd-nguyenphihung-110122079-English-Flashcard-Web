@@ -12,6 +12,25 @@ export default function Login(){
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
       const { token, user } = res.data;
+      
+      // Xóa tất cả dữ liệu cũ của user trước đó
+      const oldUser = localStorage.getItem('user');
+      if (oldUser) {
+        const oldUserData = JSON.parse(oldUser);
+        // Nếu đăng nhập user khác, xóa hết dữ liệu cache
+        if (oldUserData._id !== user._id) {
+          // Xóa tất cả localStorage trừ một số key hệ thống
+          const keysToRemove = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key !== 'theme') { // Giữ lại theme nếu có
+              keysToRemove.push(key);
+            }
+          }
+          keysToRemove.forEach(key => localStorage.removeItem(key));
+        }
+      }
+      
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       alert('Đăng nhập thành công');

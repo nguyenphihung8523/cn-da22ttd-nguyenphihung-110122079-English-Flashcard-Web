@@ -63,8 +63,19 @@ export default function Settings() {
     }
   };
 
+  const clearAllUserData = () => {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key !== 'theme') {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    clearAllUserData();
     navigate('/login');
   };
 
@@ -72,7 +83,7 @@ export default function Settings() {
     if (window.confirm('Bạn có chắc muốn đăng xuất khỏi tất cả thiết bị?')) {
       try {
         await API.post('/user/logout-all');
-        localStorage.removeItem('token');
+        clearAllUserData();
         navigate('/login');
       } catch (err) {
         alert('Lỗi đăng xuất');
